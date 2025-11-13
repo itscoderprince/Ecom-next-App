@@ -20,6 +20,8 @@ import {
 import { Eye, EyeClosed } from "lucide-react";
 import logo from "../../../../../public/assets/images/logo-black.png";
 import { WEBSITE_LOGIN } from "@/routes/Website.route";
+import axios from "axios";
+import { toast } from "sonner";
 
 const Register = () => {
   const [showPsw, setShowPsw] = useState(false);
@@ -43,8 +45,24 @@ const Register = () => {
   });
 
   async function onSubmit(values) {
-    console.log("Form Submitted ✅", values);
+    try {
+      // Send user registration data to backend
+      const { data } = await axios.post("/api/auth/register", values);
+
+      if (!data.success) {
+        toast.error(data.message || "Something went wrong!");
+        return;
+      }
+
+      toast.success(data.message || "Registration successful!");
+      form.reset();
+
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "User already exists. Please try logging in.");
+    }
   }
+
 
   return (
     <Card className="w-[450px]">

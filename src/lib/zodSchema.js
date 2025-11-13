@@ -22,8 +22,14 @@ export const zSchema = z.object({
   confirmPassword: z
     .string({ required_error: "Confirm Password is required" })
     .min(6, "Confirm Password must be at least 6 characters"),
+
+  otp: z
+    .string()
+    .min(6, "OTP must be 6 digits long")
+    .max(6, "OTP must be 6 digits long")
+    .regex(/^\d{6}$/, "OTP must contain only numbers"),
 })
-.refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"], 
-});
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
