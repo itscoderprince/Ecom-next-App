@@ -3,10 +3,9 @@ import { Assistant } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import GlobalProvider from "@/components/Application/GlobalProvider";
 
-const assistantFont = Assistant({
-  weight: ["400", "500", "600", "700", "800"],
+const assistant = Assistant({
   subsets: ["latin"],
-  display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata = {
@@ -17,7 +16,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${assistantFont.className} antialiased`}>
+      <body className={`${assistant.className} antialiased`}>
         <GlobalProvider>
           {children}
           <Toaster />

@@ -1,3 +1,4 @@
+// components/pages/Register.jsx
 "use client";
 
 import React, { useState } from "react";
@@ -22,6 +23,7 @@ import logo from "../../../../../public/assets/images/logo-black.png";
 import { WEBSITE_LOGIN } from "@/routes/Website.route";
 import axios from "axios";
 import { toast } from "sonner";
+import z from "zod";
 
 const Register = () => {
   const [showPsw, setShowPsw] = useState(false);
@@ -46,7 +48,6 @@ const Register = () => {
 
   async function onSubmit(values) {
     try {
-      // Send user registration data to backend
       const { data } = await axios.post("/api/auth/register", values);
 
       if (!data.success) {
@@ -56,13 +57,11 @@ const Register = () => {
 
       toast.success(data.message || "Registration successful!");
       form.reset();
-
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || "User already exists. Please try logging in.");
     }
   }
-
 
   return (
     <Card className="w-[450px]">
@@ -85,11 +84,7 @@ const Register = () => {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="Enter your name"
-                      {...field}
-                    />
+                    <Input type="text" placeholder="Enter your name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -104,11 +99,7 @@ const Register = () => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="Enter your email"
-                      {...field}
-                    />
+                    <Input type="email" placeholder="Enter your email" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -136,11 +127,7 @@ const Register = () => {
                       onClick={() => setShowPsw(!showPsw)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                     >
-                      {showPsw ? (
-                        <Eye className="h-4 w-4" />
-                      ) : (
-                        <EyeClosed className="h-4 w-4" />
-                      )}
+                      {showPsw ? <Eye className="h-4 w-4" /> : <EyeClosed className="h-4 w-4" />}
                     </button>
                   </div>
                   <FormMessage />
@@ -169,11 +156,7 @@ const Register = () => {
                       onClick={() => setShowConfirmPsw(!showConfirmPsw)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                     >
-                      {showConfirmPsw ? (
-                        <Eye className="h-4 w-4" />
-                      ) : (
-                        <EyeClosed className="h-4 w-4" />
-                      )}
+                      {showConfirmPsw ? <Eye className="h-4 w-4" /> : <EyeClosed className="h-4 w-4" />}
                     </button>
                   </div>
                   <FormMessage />
@@ -193,10 +176,7 @@ const Register = () => {
 
         <div className="text-center mt-4 flex items-center justify-center gap-2 text-sm">
           <p>Already have an account?</p>
-          <Link
-            href={WEBSITE_LOGIN}
-            className="text-primary underline hover:text-primary/80"
-          >
+          <Link href={WEBSITE_LOGIN} className="text-primary underline hover:text-primary/80">
             Login here
           </Link>
         </div>

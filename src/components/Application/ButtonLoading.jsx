@@ -17,7 +17,7 @@ export function ButtonLoading({
             variant="default"
             onClick={onClick}
             disabled={loading}
-            className={cn("flex items-center gap-2", className)}
+            className={cn("flex items-center gap-2 cursor-pointer", className)}
             {...props}
         >
             {loading && <Spinner className="h-4 w-4" />}

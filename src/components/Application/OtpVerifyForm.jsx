@@ -18,6 +18,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { zSchema } from "@/lib/zodSchema";
 import { Loader2 } from "lucide-react";
+import axios from "axios";
+import { toast } from "sonner";
 
 const OtpVerifyForm = ({ email, onSubmit }) => {
   const formSchema = zSchema.pick({ otp: true, email: true });
@@ -94,11 +96,16 @@ const OtpVerifyForm = ({ email, onSubmit }) => {
                 Didn’t receive the code?{" "}
                 <button
                   type="button"
-                  onClick={() => alert("Resend OTP triggered")}
+                  onClick={async () => {
+                    const res = await axios.post("/api/auth/resend-otp", { email });
+                    if (res.data.success) toast.success("OTP resent");
+                    else toast.error(res.data.message);
+                  }}
                   className="text-primary hover:underline"
                 >
                   Resend
                 </button>
+
               </p>
             </div>
           </FieldGroup>

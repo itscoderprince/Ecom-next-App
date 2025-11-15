@@ -1,3 +1,4 @@
+// models/userModel.js
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
@@ -25,30 +26,18 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      select: false,
+      select: false, // so we need to explicitly select it when required
     },
     avatar: {
-      url: {
-        type: String,
-        trim: true,
-      },
-      public_id: {
-        type: String,
-        trim: true,
-      },
+      url: String,
+      public_id: String,
     },
     isEmailVerified: {
       type: Boolean,
       default: false,
     },
-    phone: {
-      type: String,
-      trim: true,
-    },
-    address: {
-      type: String,
-      trim: true,
-    },
+    phone: String,
+    address: String,
     deletedAt: {
       type: Date,
       default: null,
@@ -58,16 +47,16 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// 🔐 Hash password before saving
+// Hash password before save
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-// 🔍 Add instance method for comparing passwords
+// Compare password
 userSchema.methods.comparePassword = async function (password) {
-  return await bcrypt.compare(password, this.password);
+  return bcrypt.compare(password, this.password);
 };
 
 export const User = mongoose.models.User || mongoose.model("User", userSchema);
