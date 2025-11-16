@@ -21,15 +21,19 @@ import {
 } from "@/components/ui/form";
 import { Eye, EyeClosed } from "lucide-react";
 import logo from "../../../../../public/assets/images/logo-black.png";
-import { WEBSITE_REGISTER, WEBSITE_RESETPASSWORD } from "@/routes/Website.route";
+import { USER_DASHBOARD, WEBSITE_REGISTER, WEBSITE_RESETPASSWORD } from "@/routes/Website.route";
 import { toast } from "sonner";
 import axios from "axios";
 import OtpVerifyForm from "@/components/Application/OtpVerifyForm";
 import { useDispatch } from "react-redux";
 import { login } from "@/store/reducer/authReducer";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ADMIN_DASHBOARD } from "@/routes/AdminPanel.route";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [showPsw, setShowPsw] = useState(false);
   const [otpEmail, setOtpEmail] = useState("");
 
@@ -87,6 +91,7 @@ const LoginPage = () => {
   async function otpVerify(values) {
     try {
       const { data } = await axios.post("/api/auth/verify-otp", values);
+      console.log(data.data);
 
       if (!data.success) {
         toast.error(data.message);
@@ -96,6 +101,13 @@ const LoginPage = () => {
       dispatch(login(data.data));
       toast.success("Login successful");
       setOtpEmail("");
+
+      if (searchParams.has('callback')) {
+        router.push(searchParams.get('callback'))
+      } else {
+        data.data.role === 'admin' ? router.push(ADMIN_DASHBOARD) : router.push(USER_DASHBOARD)
+      }
+
     } catch (err) {
       toast.error(err.response?.data?.message || "Server error");
     }
