@@ -1,68 +1,71 @@
-// api/auth/verify-otp.js
 import { connectDB } from "@/lib/db";
-import { zSchema } from "@/lib/zodSchema";
 import { OtpModel } from "@/models/otpModel";
 import { User } from "@/models/userModel";
-import { SignJWT } from "jose";
-import { NextResponse } from "next/server";
+import { generateOTP, response, catchError } from "@/lib/helperFunction";
+import { sendMail } from "@/lib/sendMail";
+import { otpEmail } from "@/email/otpVerification";
+import { zSchema } from "@/lib/zodSchema";
 
-export async function POST(request) {
+export async function POST(req) {
   try {
     await connectDB();
-    const payload = await request.json();
 
-    const validation = zSchema.pick({ email: true, otp: true }).safeParse(payload);
+    const payload = await req.json();
 
-    if (!validation.success)
-      return NextResponse.json({ success: false, message: "Invalid input" }, { status: 400 });
+    // ---------------- Validate Input ----------------
+    const validation = zSchema.pick({ email: true }).safeParse(payload);
 
-    const { email, otp } = validation.data;
-
-    const otpRecord = await OtpModel.findOne({ email, otp });
-    if (!otpRecord)
-      return NextResponse.json({ success: false, message: "Invalid or expired OTP" }, { status: 404 });
-
-    const user = await User.findOne({ email, deletedAt: null });
-    if (!user)
-      return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
-
-    if (!user.isEmailVerified) {
-      user.isEmailVerified = true;
-      await user.save();
+    if (!validation.success) {
+      return response(false, 400, "INVALID_INPUT", validation.error.flatten());
     }
 
-    const payloadData = {
-      _id: user._id.toString(),
-      role: user.role,
-      name: user.name,
-      avatar: user.avatar,
-    };
+    const { email } = validation.data;
 
-    const secret = new TextEncoder().encode(process.env.SECRET_KEY);
-    const token = await new SignJWT(payloadData)
-      .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("7d")
-      .sign(secret);
+    // ---------------- Check User ----------------
+    const user = await User.findOne({ email, deletedAt: null }).select(
+      "+isEmailVerified"
+    );
 
-    await otpRecord.deleteOne();
+    if (!user) {
+      return response(false, 404, "USER_NOT_FOUND");
+    }
 
-    const res = NextResponse.json({
-      success: true,
-      message: "Login successful",
-      data: payloadData,
+    if (!user.isEmailVerified) {
+      return response(false, 403, "EMAIL_NOT_VERIFIED");
+    }
+
+    // ---------------- Rate Limit (30s Cooldown) ----------------
+    const lastOtp = await OtpModel.findOne({ email }).sort({ createdAt: -1 });
+
+    if (lastOtp) {
+      const secondsPassed = (Date.now() - lastOtp.createdAt.getTime()) / 1000;
+
+      if (secondsPassed < 30) {
+        return response(false, 429, "OTP_REQUEST_TOO_FAST");
+      }
+    }
+
+    // ---------------- Remove Old OTP ----------------
+    await OtpModel.deleteMany({ email });
+
+    // ---------------- Generate New OTP ----------------
+    const otp = generateOTP();
+
+    await OtpModel.create({
+      email,
+      otp,
+      createdAt: new Date(),
     });
 
-    res.cookies.set({
-      name: "access_token",
-      value: token,
-      httpOnly: true,
-      path: "/",
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+    // ---------------- Send OTP Email ----------------
+    await sendMail({
+      to: email,
+      subject: "Your OTP Code",
+      html: otpEmail(otp),
     });
 
-    return res;
-  } catch (err) {
-    return NextResponse.json({ success: false, message: "Server error", error: err.message }, { status: 500 });
+    return response(true, 200, "OTP_SENT_SUCCESSFULLY");
+  } catch (error) {
+    return catchError(error);
   }
 }
