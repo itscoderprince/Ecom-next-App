@@ -1,4 +1,3 @@
-// components/pages/LoginPage.jsx (or app/(...) page)
 "use client";
 
 import React, { useState } from "react";

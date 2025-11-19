@@ -19,23 +19,14 @@ export async function POST(request) {
       .safeParse(payload);
 
     if (!validation.success) {
-      return response(
-        false,
-        400,
-        "Invalid fields",
-        validation.error.flatten()
-      );
+      return response(false, 400, "Invalid fields", validation.error.flatten());
     }
 
     const { name, email, password } = validation.data;
 
     // ------- Check Required ENV -------
     if (!process.env.SECRET_KEY || !process.env.NEXT_PUBLIC_BASE_URL) {
-      return response(
-        false,
-        500,
-        "Server configuration error. Missing environment variables."
-      );
+      return response(false, 500, "Server configuration error. Missing environment variables.");
     }
 
     // ------- Prevent duplicate registration -------
@@ -71,11 +62,7 @@ export async function POST(request) {
       html: emailVerificationLink(verifyUrl),
     });
 
-    return response(
-      true,
-      200,
-      "Registration successful! Please verify your email to continue."
-    );
+    return response( true, 200, "Registration successful! Please verify your email to continue.");
   } catch (err) {
     return catchError(err);
   }

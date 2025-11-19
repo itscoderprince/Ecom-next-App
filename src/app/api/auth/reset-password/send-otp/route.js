@@ -40,7 +40,7 @@ export async function POST(req) {
     if (lastOtp) {
       const diff = (Date.now() - lastOtp.createdAt.getTime()) / 1000;
 
-      if (diff < 30) {
+      if (diff < 15) {
         return response(false, 429, "OTP_REQUEST_TOO_FAST"); // 30 sec cooldown
       }
     }

@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MdAddShoppingCart, MdLogout } from "react-icons/md";
+import { MdAddShoppingCart, } from "react-icons/md";
 import { IoBagHandle } from "react-icons/io5";
 import {useSelector } from "react-redux";
 
@@ -17,7 +17,6 @@ import LogoutButton from "./LogoutButton";
 
 const UserDropdown = () => {
   const { auth } = useSelector((store) => store.authStore);
-  console.log(auth);
   
   return (
     <DropdownMenu>

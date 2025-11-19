@@ -7,9 +7,9 @@ import { LuUserRound } from "react-icons/lu";
 import { IoMdStarOutline } from "react-icons/io";
 import { MdOutlinePermMedia } from "react-icons/md";
 import { RiCoupon2Line } from "react-icons/ri";
-import { ADMIN_DASHBOARD } from "@/routes/AdminPanel.route";
+import { ADMIN_DASHBOARD, ADMIN_MEDIA_SHOW } from "@/routes/AdminPanel.route";
 
-export const adminAppSidebarMenu =  [
+export const adminAppSidebarMenu = [
     {
         title: "Dashboard",
         url: ADMIN_DASHBOARD,
@@ -85,7 +85,7 @@ export const adminAppSidebarMenu =  [
     },
     {
         title: "Media",
-        url: "#",
+        url: ADMIN_MEDIA_SHOW,
         icon: MdOutlinePermMedia,
     },
 ];
