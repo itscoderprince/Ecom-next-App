@@ -100,7 +100,6 @@ export const isAuthenticated = async (role) => {
 
     const cookieStore = await cookies();
     const token = cookieStore.get("access_token")?.value;
-    console.log(token);
 
     if (!token) {
       return { isAuth: false, error: "TOKEN_NOT_FOUND" };
@@ -110,7 +109,6 @@ export const isAuthenticated = async (role) => {
       token,
       new TextEncoder().encode(process.env.SECRET_KEY)
     );
-    console.log(payload);
 
     if (role && payload.role !== role) {
       return { isAuth: false, error: "ROLE_NOT_ALLOWED" };

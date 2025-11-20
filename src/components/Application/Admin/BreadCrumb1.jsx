@@ -10,7 +10,7 @@ import React from "react";
 
 const AdminBreadcrumb = ({ breadcrumbData = [] }) => {
   return (
-    <Breadcrumb className="mb-2">
+    <Breadcrumb className="mb-3">
       <BreadcrumbList>
         {breadcrumbData.map((item, index) => {
           const isLast = index === breadcrumbData.length - 1;

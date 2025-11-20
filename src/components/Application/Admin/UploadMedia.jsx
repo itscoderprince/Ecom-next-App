@@ -1,5 +1,5 @@
-"use client";
-
+// "use client";
+/** 
 import React from "react";
 import { CldUploadWidget } from "next-cloudinary";
 import { Button } from "@/components/ui/button";
@@ -10,8 +10,8 @@ import { useSelector } from "react-redux";
 
 const UploadMedia = ({ isMultiple = true }) => {
   const auth = useSelector((state) => state.authStore?.auth);
-  const uploadedFilesRef = React.useRef([]); // Collect files as they upload
-  const savingRef = React.useRef(false); // Prevent duplicate saves
+  const uploadedFilesRef = React.useRef([]); 
+  const savingRef = React.useRef(false);
 
   // Fires for every single uploaded file
   const handleSuccess = (result) => {
@@ -21,12 +21,10 @@ const UploadMedia = ({ isMultiple = true }) => {
     }
   };
 
-  // Fires when user clicks DONE (very important)
+  // Fires when user clicks DONE 
   const handleQueueEnd = async () => {
     if (savingRef.current) return; 
-    const files = uploadedFilesRef.current;
-    console.log(files);
-    
+    const files = uploadedFilesRef.current;  
     if (files.length === 0) return;
 
     savingRef.current = true;
@@ -86,6 +84,101 @@ const UploadMedia = ({ isMultiple = true }) => {
           }}
         >
           <FiPlusCircle className="mr-2" />
+          Upload Media
+        </Button>
+      )}
+    </CldUploadWidget>
+  );
+};
+
+export default UploadMedia; */
+
+
+"use client";
+
+import React from "react";
+import { CldUploadWidget } from "next-cloudinary";
+import { Button } from "@/components/ui/button";
+import { FiPlusCircle } from "react-icons/fi";
+import axios from "axios";
+import { toast } from "sonner";
+import { useSelector } from "react-redux";
+
+const UploadMedia = ({ isMultiple = true }) => {
+  const auth = useSelector((state) => state.authStore?.auth);
+
+  // Store uploaded files temporarily (fast + reliable)
+  const uploaded = React.useRef([]);
+  const isSaving = React.useRef(false);
+
+  // When each single file is uploaded
+  const handleSuccess = (result) => {
+    const file = result?.info;
+    if (file?.public_id && file?.asset_id) {
+      uploaded.current.push(file);
+    }
+  };
+
+  // When user clicks DONE
+  const handleQueueEnd = async () => {
+    if (isSaving.current) return;
+    if (uploaded.current.length === 0) return;
+    isSaving.current = true;
+
+    const filesToSave = uploaded.current.map((f) => ({
+      asset_id: f.asset_id,
+      public_id: f.public_id,
+      path: f.path,
+      thumbnail_url: f.thumbnail_url,
+      secure_url: f.secure_url,
+      alt: f.original_filename || f.display_name || "",
+      title: f.original_filename || f.display_name || "",
+    }));
+
+    try {
+      const { data } = await axios.post(
+        "/api/media/create",
+        { files: filesToSave },
+        { withCredentials: true }
+      );
+
+      if (!data.success) throw new Error(data.message);
+
+      toast.success(`${filesToSave.length} file(s) uploaded successfully!`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Upload failed");
+    }
+
+    // Reset for next upload
+    uploaded.current = [];
+    isSaving.current = false;
+  };
+
+  return (
+    <CldUploadWidget
+      uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_PRESET}
+      signatureEndpoint="/api/cloudinary-signature"
+      onSuccess={handleSuccess}
+      onQueuesEnd={handleQueueEnd}
+      options={{
+        multiple: isMultiple,
+        sources: ["local", "url", "unsplash", "google_drive"],
+      }}
+      config={{
+        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+        apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+      }}
+    >
+      {({ open }) => (
+        <Button
+          onClick={() => {
+            if (!auth) return toast.error("Please sign in first.");
+            uploaded.current = [];
+            isSaving.current = false;
+            open();
+          }}
+        >
+          <FiPlusCircle className="mr-1" />
           Upload Media
         </Button>
       )}

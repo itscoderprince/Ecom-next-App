@@ -5,10 +5,7 @@ import { catchError, response, isAuthenticated } from "@/lib/helperFunction";
 export async function POST(request) {
   try {
     const auth = await isAuthenticated("admin");
-    if (!auth.isAuth) {
-      return response(false, 403, "UNAUTHORIZED");
-    }
-
+    if (!auth.isAuth) return response(false, 403, "UNAUTHORIZED");
     const { paramsToSign } = await request.json();
 
     if (!paramsToSign) return response(false, 400, "MISSING_PARAMS");
