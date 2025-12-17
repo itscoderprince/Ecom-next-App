@@ -1,5 +1,6 @@
+import { isAuthenticated } from "@/lib/authentication";
 import { connectDB } from "@/lib/db";
-import { catchError, isAuthenticated, response } from "@/lib/helperFunction";
+import { catchError, response } from "@/lib/helperFunction";
 import { mediaModel as Media } from "@/models/mediaModel";
 import { NextResponse } from "next/server";
 

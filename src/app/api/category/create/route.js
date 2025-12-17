@@ -1,5 +1,6 @@
+import { isAuthenticated } from "@/lib/authentication";
 import { connectDB } from "@/lib/db";
-import { catchError, isAuthenticated, response } from "@/lib/helperFunction";
+import { catchError, response } from "@/lib/helperFunction";
 import { zSchema } from "@/lib/zodSchema";
 import { CategoryModel } from "@/models/categoryModel";
 
@@ -11,8 +12,6 @@ export async function POST(req) {
     await connectDB();
 
     const payload = await req.json();
-
-    // ------ Zod validation ------
     const validation = zSchema
       .pick({ name: true, slug: true })
       .safeParse(payload);
@@ -22,6 +21,18 @@ export async function POST(req) {
     }
 
     const { name, slug } = validation.data;
+
+    const existingCategory = await CategoryModel.findOne({
+      $or: [{ name: { $regex: new RegExp(`^${name}$`, "i") } }, { slug }],
+    });
+
+    if (existingCategory) {
+      return response(
+        false,
+        400,
+        "Category with this name or slug already exists."
+      );
+    }
 
     const newCategory = new CategoryModel({ name, slug });
     await newCategory.save();

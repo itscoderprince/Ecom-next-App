@@ -14,7 +14,7 @@ export async function POST(request) {
     await connectDB();
     const payload = await request.json();
 
-    // -------------------- VALIDATION --------------------
+    // -------- VALIDATION --------
     const validation = zSchema
       .pick({ email: true })
       .extend({

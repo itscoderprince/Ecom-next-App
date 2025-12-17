@@ -1,7 +1,8 @@
 import { connectDB } from "@/lib/db";
-import { catchError, isAuthenticated, response } from "@/lib/helperFunction";
+import { catchError, response } from "@/lib/helperFunction";
 import { mediaModel } from "@/models/mediaModel";
 import { zSchema } from "@/lib/zodSchema"; // FIXED: missing import
+import { isAuthenticated } from "@/lib/authentication";
 
 export async function PUT(req) {
   try {
@@ -11,7 +12,7 @@ export async function PUT(req) {
     await connectDB();
 
     // -------------------- VALIDATION --------------------
-    const payload = await req.json(); 
+    const payload = await req.json();
 
     const validation = zSchema
       .pick({ _id: true, title: true, alt: true })

@@ -47,13 +47,13 @@ const AddCategory = () => {
   async function onSubmit(values) {
     try {
       const { data } = await axios.post(`/api/category/create`, values);
-
       if (!data.success) {
         toast.error(data.message || "Update failed");
         return;
       }
 
-      toast.success("Media updated successfully");
+      form.reset()
+      toast.success(data.message);
     } catch (error) {
       toast.error(error.response?.data?.message || "Server error");
     }

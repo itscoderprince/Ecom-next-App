@@ -1,4 +1,3 @@
-// models/categoryModel.js
 import mongoose from "mongoose";
 
 const categorySchema = new mongoose.Schema(
@@ -7,6 +6,7 @@ const categorySchema = new mongoose.Schema(
       type: String,
       unique: true,
       required: true,
+      trim: true,
     },
 
     slug: {

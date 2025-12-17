@@ -1,40 +1,28 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
 import { IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
 
 const ThemeSwitch = () => {
-  const { setTheme } = useTheme();
-  return (
-    <div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button type="button" variant="ghost" size="icon">
-            <IoSunnyOutline className="h-5 w-5 dark:hidden" />
-            <IoMoonOutline className="h-5 w-5 hidden dark:block" />
-          </Button>
-        </DropdownMenuTrigger>
+  const { setTheme, resolvedTheme } = useTheme();
 
-        <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => setTheme("light")}>
-            Light
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setTheme("dark")}>
-            Dark
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setTheme("system")}>
-            System
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  };
+
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      onClick={toggleTheme}
+      className="rounded-full"
+    >
+      <IoSunnyOutline className="h-5 w-5 dark:hidden" />
+      <IoMoonOutline className="h-5 w-5 hidden dark:block" />
+      <span className="sr-only">Toggle theme</span>
+    </Button>
   );
 };
 

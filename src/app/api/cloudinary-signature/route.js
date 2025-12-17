@@ -1,6 +1,7 @@
 import cloudinary from "@/lib/cloudinary";
 import { NextResponse } from "next/server";
-import { catchError, response, isAuthenticated } from "@/lib/helperFunction";
+import { catchError, response } from "@/lib/helperFunction";
+import { isAuthenticated } from "@/lib/authentication";
 
 export async function POST(request) {
   try {

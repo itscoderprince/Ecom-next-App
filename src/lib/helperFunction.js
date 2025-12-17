@@ -1,5 +1,3 @@
-import { jwtVerify } from "jose";
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export const response = (success, status = 200, message = "", data = {}) => {
@@ -92,39 +90,6 @@ export const generateOTP = () => {
   return otp;
 };
 
-export const isAuthenticated = async (role) => {
-  try {
-    if (!process.env.SECRET_KEY) {
-      throw new Error("SECRET_KEY is not configured.");
-    }
-
-    const cookieStore = await cookies();
-    const token = cookieStore.get("access_token")?.value;
-
-    if (!token) {
-      return { isAuth: false, error: "TOKEN_NOT_FOUND" };
-    }
-
-    const { payload } = await jwtVerify(
-      token,
-      new TextEncoder().encode(process.env.SECRET_KEY)
-    );
-
-    if (role && payload.role !== role) {
-      return { isAuth: false, error: "ROLE_NOT_ALLOWED" };
-    }
-
-    return {
-      isAuth: true,
-      userId: payload._id,
-      role: payload.role,
-    };
-  } catch (error) {
-    console.error("isAuthenticated error:", error);
-    return { isAuth: false, error };
-  }
-};
-
 export const columnConfig = (
   column,
   isCreatedAt = false,
@@ -135,23 +100,23 @@ export const columnConfig = (
 
   if (isCreatedAt) {
     newColumn.push({
-      accessorKey:'createdAt',
-      header:'Created At',
-      cell:({renderCellValue}) => (new Date(renderCellValue).toLocaleString())
+      accessorKey: 'createdAt',
+      header: 'Created At',
+      cell: ({ renderCellValue }) => (new Date(renderCellValue).toLocaleString())
     });
   }
   if (isUpdatedAt) {
     newColumn.push({
-      accessorKey:'updatedAt',
-      header:'Updated At',
-      cell:({renderCellValue}) => (new Date(renderCellValue).toLocaleString())
+      accessorKey: 'updatedAt',
+      header: 'Updated At',
+      cell: ({ renderCellValue }) => (new Date(renderCellValue).toLocaleString())
     });
   }
   if (isDeletedAt) {
     newColumn.push({
-      accessorKey:'deletedAt',
-      header:'Deleted At',
-      cell:({renderCellValue}) => (new Date(renderCellValue).toLocaleString())
+      accessorKey: 'deletedAt',
+      header: 'Deleted At',
+      cell: ({ renderCellValue }) => (new Date(renderCellValue).toLocaleString())
     });
   }
   return newColumn;

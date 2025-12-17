@@ -1,9 +1,10 @@
 'use client'
 
-import { Tooltip } from "@radix-ui/react-tooltip";
+import { Tooltip, IconButton } from "@mui/material";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import axios from "axios";
 import {
+  MaterialReactTable,
   MRT_ShowHideColumnsButton,
   MRT_ToggleDensePaddingButton,
   MRT_ToggleFiltersButton,
@@ -45,6 +46,7 @@ const DataTable = ({
   });
   const [rowSelection, setRowSelection] = useState({});
   const [exportLoading, setExportLoading] = useState(false);
+  const [selectedRows, setSelectedRows] = useState([]);
 
   // =======================
   // API Query (React Query)
@@ -70,6 +72,7 @@ const DataTable = ({
       URL.searchParams.set("filters", JSON.stringify(columnFilters ?? []));
       URL.searchParams.set("globalFilter", globalFilter ?? "");
       URL.searchParams.set("sorting", JSON.stringify(sorting ?? []));
+      URL.searchParams.set("deleteType", deleteType);
 
       const { data: response } = await axios.get(URL.href);
       return response;
@@ -244,12 +247,12 @@ const DataTable = ({
       </>
     ),
     enableRowActions: true,
-    positionActionsColumn: last,
+    positionActionsColumn: "last",
     renderRowActionMenuItems: ({ row }) =>
       createAction(row, deleteType, handleDelete),
 
     renderTopToolbarCustomActions: ({ table }) => (
-      <Tooltip>
+      <Tooltip title="Export Data">
         <ButtonLoading
           loading={exportLoading}
           onClick={() => handleExport(table.getSelectedRowModel().rows)}
@@ -263,7 +266,7 @@ const DataTable = ({
   // =======================
   // Render
   // =======================
-  return <div></div>;
+  return <MaterialReactTable table={table} />
 };
 
 export default DataTable;

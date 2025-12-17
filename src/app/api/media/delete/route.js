@@ -1,13 +1,14 @@
+import { isAuthenticated } from "@/lib/authentication";
 import cloudinary from "@/lib/cloudinary";
 import { connectDB } from "@/lib/db";
-import { catchError, isAuthenticated, response } from "@/lib/helperFunction";
+import { catchError, response } from "@/lib/helperFunction";
 import { mediaModel } from "@/models/mediaModel";
 import mongoose from "mongoose";
 
 export async function PUT(req) {
   try {
-    const auth  = await isAuthenticated("admin");
-    
+    const auth = await isAuthenticated("admin");
+
     if (!auth.isAuth) return response(false, 403, "Unauthorize.");
 
     await connectDB();
@@ -42,7 +43,7 @@ export async function PUT(req) {
 
     return response(true, 200, "Data restored successfully.");
   } catch (error) {
-    
+
     return catchError(error);
   }
 }
