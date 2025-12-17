@@ -1,49 +1,34 @@
-"use client";
-
-import { usePathname } from "next/navigation";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
   BreadcrumbSeparator,
+  BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
-import { buildRouteMap } from "@/lib/adminBreadcrumbs";
-import { adminAppSidebarMenu } from "@/lib/adminSidebarMenu";
 import React from "react";
-const routeMap = buildRouteMap(adminAppSidebarMenu);
 
-export default function DynamicBreadcrumb() {
-  const pathname = usePathname();
-  const segments = pathname.split("/").filter(Boolean);
-
-  const paths = segments.map((_, idx) => {
-    return "/" + segments.slice(0, idx + 1).join("/");
-  });
-
+const BreadCrumb = ({ breadcrumbData = [] }) => {
   return (
-    <Breadcrumb>
+    <Breadcrumb className="mb-3">
       <BreadcrumbList>
-        {/* Home Item */}
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-
-        {paths.map((path, i) => {
-          const label = routeMap[path] || segments[i];
+        {breadcrumbData.map((item, index) => {
+          const isLast = index === breadcrumbData.length - 1;
 
           return (
-            <React.Fragment key={path}>
-              <BreadcrumbSeparator />
-
-              {i === paths.length - 1 ? (
-                <BreadcrumbItem>
-                  <BreadcrumbPage>{label}</BreadcrumbPage>
-                </BreadcrumbItem>
+            <React.Fragment key={index}>
+              {!isLast ? (
+                <>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href={item.href}>
+                      {item.label}
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                </>
               ) : (
                 <BreadcrumbItem>
-                  <BreadcrumbLink href={path}>{label}</BreadcrumbLink>
+                  <BreadcrumbPage>{item.label}</BreadcrumbPage>
                 </BreadcrumbItem>
               )}
             </React.Fragment>
@@ -52,4 +37,6 @@ export default function DynamicBreadcrumb() {
       </BreadcrumbList>
     </Breadcrumb>
   );
-}
+};
+
+export default BreadCrumb;

@@ -22,7 +22,7 @@ const useDeleteMutation = (queryKey, deleteEndPoint) => {
     // 2. SUCCESS HANDLER
     onSuccess: (data) => {
       // Refresh the media list
-      queryClient.invalidateQueries(queryKey);
+      queryClient.invalidateQueries({ queryKey: [queryKey] });
       toast.success(data.message);
     },
 

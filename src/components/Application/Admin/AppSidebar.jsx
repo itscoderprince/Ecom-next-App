@@ -51,20 +51,25 @@ const AppSidebar = () => {
           {adminAppSidebarMenu.map((menu, index) => (
             <Collapsible key={index} className="group/collapsible">
               <SidebarMenuItem>
-                <CollapsibleTrigger asChild>
+                {menu.submenu?.length > 0 ? (
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton className="font-semibold px-2 py-5">
+                      <menu.icon />
+                      {menu.title}
+                      <LuChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                ) : (
                   <SidebarMenuButton
                     asChild
                     className="font-semibold px-2 py-5"
                   >
-                    <Link href={menu?.url}>
+                    <Link href={menu.url}>
                       <menu.icon />
                       {menu.title}
-                      {menu.submenu?.length > 0 && (
-                        <LuChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                      )}
                     </Link>
                   </SidebarMenuButton>
-                </CollapsibleTrigger>
+                )}
               </SidebarMenuItem>
 
               {menu.submenu?.length > 0 && (
