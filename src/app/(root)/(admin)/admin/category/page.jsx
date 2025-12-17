@@ -1,11 +1,16 @@
+'use client'
+
 import BreadCrumb from "@/components/Application/Admin/BreadCrumb";
 import DatatableWrapper from "@/components/Application/Admin/DatatableWrapper";
+import EditAction from "@/components/Application/Admin/EditAction";
+import DeleteAction from "@/components/Application/Admin/DeleteAction";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { DT_CATEGORY_COLUMN } from "@/lib/column";
 import { columnConfig } from "@/lib/helperFunction";
 import {
   ADMIN_CATEGORY_ADD,
+  ADMIN_CATEGORY_EDIT,
   ADMIN_CATEGORY_SHOW,
   ADMIN_DASHBOARD,
   ADMIN_TRASH,
@@ -26,7 +31,8 @@ const ShowCategory = () => {
 
   const action = useCallback((row, deleteType, handleDelete) => {
     let actionMenu = [];
-    action.push();
+    actionMenu.push(<EditAction key='edit' href={ADMIN_CATEGORY_EDIT(row.original._id)} />);
+    actionMenu.push(<DeleteAction key='delete' handleDelete={handleDelete} row={row} deleteType={deleteType} />);
     return actionMenu;
   }, []);
 
@@ -56,6 +62,7 @@ const ShowCategory = () => {
             deleteEndPoint="/api/category/delete"
             deleteType="SD"
             trashView={`${ADMIN_TRASH}?trashof=category`}
+            createAction={action}
           />
         </CardContent>
       </Card>
