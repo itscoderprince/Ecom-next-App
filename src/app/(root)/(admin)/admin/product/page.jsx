@@ -1,0 +1,75 @@
+'use client'
+
+import BreadCrumb from "@/components/Application/Admin/BreadCrumb";
+import DatatableWrapper from "@/components/Application/Admin/DatatableWrapper";
+import EditAction from "@/components/Application/Admin/EditAction";
+import DeleteAction from "@/components/Application/Admin/DeleteAction";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { DT_PRODUCT_COLUMN } from "@/lib/column";
+import { columnConfig } from "@/lib/helperFunction";
+import {
+    ADMIN_DASHBOARD,
+    ADMIN_PRODUCT_ADD,
+    ADMIN_PRODUCT_EDIT,
+    ADMIN_PRODUCT_SHOW,
+    ADMIN_TRASH,
+} from "@/routes/AdminPanel.route";
+import { PlusCircle } from "lucide-react";
+import Link from "next/link";
+import { useCallback, useMemo } from "react";
+
+const breadcrumbData = [
+    { href: ADMIN_DASHBOARD, label: "Home" },
+    { href: ADMIN_PRODUCT_SHOW, label: "Product" },
+];
+
+const ShowProduct = () => {
+    const columns = useMemo(() => {
+        return columnConfig(DT_PRODUCT_COLUMN);
+    }, []);
+
+    const action = useCallback((row, deleteType, handleDelete) => {
+        return (
+            <>
+                <EditAction key='edit' href={ADMIN_PRODUCT_EDIT(row.original._id)} />
+                <DeleteAction key='delete' handleDelete={handleDelete} row={row} deleteType={deleteType} />
+            </>
+        );
+    }, []);
+
+    return (
+        <div>
+            {/* Breadcrumb Navigation */}
+            <BreadCrumb breadcrumbData={breadcrumbData} />
+
+            <Card className="py-0 rounded shadow-sm gap-0">
+                <CardHeader className="pt-2 px-3 border-b [.border-b]:pb-1">
+                    <div className="flex justify-between items-center">
+                        <h4 className="font-semibold text-xl">Show Product</h4>
+                        <Button className="cursor-pointer">
+                            <PlusCircle />
+                            <Link href={ADMIN_PRODUCT_ADD}>Add Product</Link>
+                        </Button>
+                    </div>
+                </CardHeader>
+
+                <CardContent className="mb-5 px-0">
+                    <DatatableWrapper
+                        queryKey="product-data"
+                        fetchUrl="/api/product"
+                        initialPageSize={10}
+                        columnsConfig={columns}
+                        exportEndPoint="/api/product/export"
+                        deleteEndPoint="/api/product/delete"
+                        deleteType="SD"
+                        trashView={`${ADMIN_TRASH}?trashof=product`}
+                        createAction={action}
+                    />
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
+export default ShowProduct;

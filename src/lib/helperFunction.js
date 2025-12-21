@@ -102,21 +102,21 @@ export const columnConfig = (
     newColumn.push({
       accessorKey: 'createdAt',
       header: 'Created At',
-      cell: ({ renderCellValue }) => (new Date(renderCellValue).toLocaleString())
+      cell: ({ cell }) => (new Date(cell.getValue()).toLocaleString())
     });
   }
   if (isUpdatedAt) {
     newColumn.push({
       accessorKey: 'updatedAt',
       header: 'Updated At',
-      cell: ({ renderCellValue }) => (new Date(renderCellValue).toLocaleString())
+      cell: ({ cell }) => (new Date(cell.getValue()).toLocaleString())
     });
   }
   if (isDeletedAt) {
     newColumn.push({
       accessorKey: 'deletedAt',
       header: 'Deleted At',
-      cell: ({ renderCellValue }) => (new Date(renderCellValue).toLocaleString())
+      cell: ({ cell }) => (new Date(cell.getValue()).toLocaleString())
     });
   }
   return newColumn;

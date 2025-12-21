@@ -23,9 +23,9 @@ export async function GET(request) {
         let matchQuery = {}
 
         if (deleteType === 'SD') {
-            matchQuery = { deleteType: null }
+            matchQuery = { deletedAt: null }
         } else if (deleteType === 'PD') {
-            matchQuery = { deleteType: 'PD' }
+            matchQuery = { deletedAt: { $ne: null } }
         }
 
         // Global filter

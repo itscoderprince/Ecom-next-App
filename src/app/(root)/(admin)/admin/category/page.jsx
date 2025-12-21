@@ -30,10 +30,12 @@ const ShowCategory = () => {
   }, []);
 
   const action = useCallback((row, deleteType, handleDelete) => {
-    let actionMenu = [];
-    actionMenu.push(<EditAction key='edit' href={ADMIN_CATEGORY_EDIT(row.original._id)} />);
-    actionMenu.push(<DeleteAction key='delete' handleDelete={handleDelete} row={row} deleteType={deleteType} />);
-    return actionMenu;
+    return (
+      <>
+        <EditAction key='edit' href={ADMIN_CATEGORY_EDIT(row.original._id)} />
+        <DeleteAction key='delete' handleDelete={handleDelete} row={row} deleteType={deleteType} />
+      </>
+    );
   }, []);
 
   return (
@@ -41,18 +43,18 @@ const ShowCategory = () => {
       {/* Breadcrumb Navigation */}
       <BreadCrumb breadcrumbData={breadcrumbData} />
 
-      <Card className="py-0 rounded shadow-sm">
-        <CardHeader className="pt-3 px-3 border-b">
+      <Card className="py-0 rounded shadow-sm gap-0">
+        <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
           <div className="flex justify-between items-center">
             <h4 className="font-semibold text-xl">Show Category</h4>
             <Button className="cursor-pointer">
               <PlusCircle />
-              <Link href={ADMIN_CATEGORY_ADD}>New Category</Link>
+              <Link href={ADMIN_CATEGORY_ADD}>Add Category</Link>
             </Button>
           </div>
         </CardHeader>
 
-        <CardContent className="mb-5">
+        <CardContent className="mb-5 px-0">
           <DatatableWrapper
             queryKey="category-data"
             fetchUrl="/api/category"

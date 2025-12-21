@@ -1,18 +1,17 @@
-import { ListItemIcon, MenuItem } from '@mui/material'
+import { IconButton, Tooltip } from '@mui/material'
 import { EditIcon } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
 const EditAction = ({ href }) => {
   return (
-    <MenuItem key="edit">
+    <Tooltip title="Edit">
       <Link href={href}>
-        <ListItemIcon>
-          <EditIcon />
-        </ListItemIcon>
-        Edit
+        <IconButton color="primary">
+          <EditIcon size={24} />
+        </IconButton>
       </Link>
-    </MenuItem>
+    </Tooltip>
   )
 }
 

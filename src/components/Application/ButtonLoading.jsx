@@ -22,6 +22,7 @@ export function ButtonLoading({
         >
             {loading && <Spinner className="h-4 w-4" />}
             {text}
+            {props.children}
         </Button>
 
     );

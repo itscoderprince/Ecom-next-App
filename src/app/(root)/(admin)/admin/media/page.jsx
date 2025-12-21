@@ -133,7 +133,7 @@ const MediaPage = () => {
         )}
 
         {/* Header */}
-        <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
+        <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-1">
           <div className="flex justify-between items-center">
             <h4 className="font-semibold text-xl uppercase">
               {deleteType === "SD" ? (
@@ -226,7 +226,7 @@ const MediaPage = () => {
                 </div>
               )}
 
-              <div className="grid lg:grid-cols-5 sm:grid-cols-3 grid-cols-2 gap-2 mb-5">
+              <div className="grid lg:grid-cols-6 sm:grid-cols-4 grid-cols-2 gap-2 mb-5">
                 {data?.pages?.map((page, index) => (
                   <React.Fragment key={index}>
                     {page?.mediaData?.map((media) => (
