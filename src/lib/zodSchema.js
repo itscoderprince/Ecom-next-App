@@ -40,7 +40,11 @@ export const zSchema = z
     sellingPrice: z.coerce.number().positive('Selling Price must be a positive number'),
     discountPercentage: z.coerce.number().min(0, 'Discount must be non-negative').max(100, 'Discount cannot exceed 100%'),
     description: z.string().min(3, "Description is required"),
-    media: z.array(z.string())
+    media: z.array(z.string()),
+    product: z.string().min(3, 'Product is required.'),
+    sku: z.string().min(3, 'SKU is required.'),
+    color: z.string().min(3, 'Color is required.'),
+    size: z.string().min(1, 'Size is required.'),
   })
 
   .refine((data) => data.password === data.confirmPassword, {

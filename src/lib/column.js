@@ -31,7 +31,7 @@ export const DT_PRODUCT_COLUMN = [
     },
     {
         accessorKey: 'discountPercentage',
-        header: 'Discount Percentage'
+        header: 'Discount'
     },
 
 ]

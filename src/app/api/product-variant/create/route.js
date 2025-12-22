@@ -2,7 +2,7 @@ import { isAuthenticated } from "@/lib/authentication";
 import { connectDB } from "@/lib/db";
 import { catchError, response } from "@/lib/helperFunction";
 import { zSchema } from "@/lib/zodSchema";
-import { ProductModel } from "@/models/productModel";
+import { ProductVariantModel } from "@/models/ProductVatiantModel";
 
 export async function POST(req) {
   try {
@@ -14,13 +14,13 @@ export async function POST(req) {
     const payload = await req.json();
     const validation = zSchema
       .pick({
-        name: true,
-        slug: true,
-        category: true,
+        product: true,
+        sku: true,
+        color: true,
+        size: true,
         mrp: true,
         sellingPrice: true,
         discountPercentage: true,
-        description: true,
         media: true
       })
       .safeParse(payload);
@@ -29,23 +29,18 @@ export async function POST(req) {
       return response(false, 400, "INVALID_INPUT", validation.error.flatten());
     }
 
-    const { name, slug, category, mrp, sellingPrice, discountPercentage, description, media
-    } = validation.data;
+    const {
+      product,
+      color,
+      size,
+      sku,
+      mrp,
+      sellingPrice,
+      discountPercentage,
+      media } = validation.data;
 
-    const existingProduct = await ProductModel.findOne({
-      $or: [{ name: { $regex: new RegExp(`^${name}$`, "i") } }, { slug }],
-    });
-
-    if (existingProduct) {
-      return response(
-        false,
-        400,
-        "Product with this name or slug already exists."
-      );
-    }
-
-    const newProduct = new ProductModel({ name, slug, category, mrp, sellingPrice, discountPercentage, description, media });
-    await newProduct.save();
+    const newProductVariant = new ProductVariantModel({ product, sku, color, size, mrp, sellingPrice, discountPercentage, media });
+    await newProductVariant.save();
 
     return response(true, 200, "Product added successfully");
   } catch (error) {

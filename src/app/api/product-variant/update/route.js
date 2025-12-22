@@ -3,8 +3,9 @@ import { connectDB } from "@/lib/db";
 import { catchError, response } from "@/lib/helperFunction";
 import { zSchema } from "@/lib/zodSchema";
 import { ProductModel } from "@/models/productModel";
+import { encode } from "entities";
 
-export async function POST(req) {
+export async function PUT(req) {
   try {
     const auth = await isAuthenticated("admin");
     if (!auth.isAuth) return response(false, 403, "Unauthorized!");
@@ -14,6 +15,7 @@ export async function POST(req) {
     const payload = await req.json();
     const validation = zSchema
       .pick({
+        _id: true,
         name: true,
         slug: true,
         category: true,
@@ -28,26 +30,27 @@ export async function POST(req) {
     if (!validation.success) {
       return response(false, 400, "INVALID_INPUT", validation.error.flatten());
     }
+    const { _id, name, slug, category, mrp, sellingPrice, discountPercentage, description, media } = validation.data;
 
-    const { name, slug, category, mrp, sellingPrice, discountPercentage, description, media
-    } = validation.data;
-
-    const existingProduct = await ProductModel.findOne({
-      $or: [{ name: { $regex: new RegExp(`^${name}$`, "i") } }, { slug }],
+    const getProduct = await ProductModel.findOne({
+      deletedAt: null,
+      _id
     });
 
-    if (existingProduct) {
-      return response(
-        false,
-        400,
-        "Product with this name or slug already exists."
-      );
-    }
+    if (!getProduct) return response(false, 404, "Data not found .");
 
-    const newProduct = new ProductModel({ name, slug, category, mrp, sellingPrice, discountPercentage, description, media });
-    await newProduct.save();
+    getProduct.name = name
+    getProduct.slug = slug
+    getProduct.category = category
+    getProduct.mrp = mrp
+    getProduct.sellingPrice = sellingPrice
+    getProduct.discountPercentage = discountPercentage
+    getProduct.description = encode(description)
+    getProduct.media = media
+    await getProduct.save()
 
-    return response(true, 200, "Product added successfully");
+
+    return response(true, 201, "Product updated successfully");
   } catch (error) {
     return catchError(error);
   }

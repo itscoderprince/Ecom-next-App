@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
     ADMIN_DASHBOARD,
-    ADMIN_PRODUCT_SHOW,
+    ADMIN_PRODUCT_VARIANT_SHOW,
 } from "@/routes/AdminPanel.route";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -21,61 +21,61 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import slugify from "slugify";
 import BreadCrumb from "@/components/Application/Admin/BreadCrumb";
 import useFetch from "@/hooks/useFetch";
 import Select from "@/components/Application/Select";
-import Editor from "@/components/Application/Admin/Editor";
 import MediaModal from "@/components/Application/Admin/MediaModal";
 import Image from "next/image";
+import { sizes } from "@/lib/utils";
 
 const AddProduct = () => {
     const breadcrumbData = [
         { href: ADMIN_DASHBOARD, label: "Home" },
-        { href: ADMIN_PRODUCT_SHOW, label: "Product" },
-        { href: "", label: "Add Product" },
+        { href: ADMIN_PRODUCT_VARIANT_SHOW, label: "Product Variants" },
+        { href: "", label: "Add Product Variants" },
     ];
 
-    const [categoryOption, setCategoryOption] = useState([])
-    const { data: getCategory } = useFetch('/api/category?deleteType=SD&&size=1000')
+    const [productOption, setProductOption] = useState([])
+    const { data: getProduct } = useFetch('/api/product?deleteType=SD&&size=1000')
 
     // Media modlal states
     const [open, setOpen] = useState(false)
     const [selectedMedia, setSelectedMedia] = useState([])
 
     useEffect(() => {
-        if (getCategory && getCategory.success) {
-            const { data } = getCategory;
-            const options = data.map((cat) => ({ label: cat.name, value: cat._id }));
-            setCategoryOption(options)
+        if (getProduct && getProduct.success) {
+            const { data } = getProduct;
+            const options = data.map((product) => ({ label: product.name, value: product._id }));
+            setProductOption(options)
         }
-    }, [getCategory])
+    }, [getProduct])
 
     // zod schema
     const formSchema = zSchema.pick({
-        name: true,
-        slug: true,
-        category: true,
+        product: true,
+        sku: true,
+        color: true,
+        size: true,
         mrp: true,
         sellingPrice: true,
         discountPercentage: true,
-        description: true,
     });
 
     // React Hook Form Initialization
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: '',
-            slug: '',
-            category: '',
+            product: '',
+            sku: '',
+            color: '',
+            size: "",
             mrp: 0,
             sellingPrice: 0,
-            discountPercentage: 0,
-            description: ''
+            discountPercentage: '',
         },
     });
 
+    // DiscountPercentage calulate
     useEffect(() => {
         const mrp = form.watch('mrp');
         const sellingPrice = form.watch('sellingPrice');
@@ -86,11 +86,6 @@ const AddProduct = () => {
         }
     }, [form.watch('mrp'), form.watch('sellingPrice')]);
 
-    // Editor data
-    const editor = (event, editor) => {
-        const data = editor.getData()
-        form.setValue("description", data)
-    }
 
     // Submit handler to update media information
     async function onSubmit(values) {
@@ -100,7 +95,7 @@ const AddProduct = () => {
             const mediaIds = selectedMedia.map((media) => media._id)
             values.media = mediaIds
 
-            const { data } = await axios.post(`/api/product/create`, values);
+            const { data } = await axios.post(`/api/product-variant/create`, values);
             if (!data.success) {
                 toast.error(data.message || "Adding failed");
                 return;
@@ -112,14 +107,6 @@ const AddProduct = () => {
             toast.error(error.response?.data?.message || "Server error");
         }
     }
-
-    useEffect(() => {
-        const name = form.getValues("name");
-        if (name) {
-            form.setValue("slug", slugify(name).toLowerCase());
-        }
-    }, [form.watch("name")]);
-
     return (
         <div>
             {/* Breadcrumb Navigation */}
@@ -127,52 +114,74 @@ const AddProduct = () => {
 
             <Card className="py-0 rounded shadow-sm">
                 <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
-                    <h4 className="font-semibold text-xl">Add Product</h4>
+                    <h4 className="font-semibold text-xl">Add Product Variant</h4>
                 </CardHeader>
 
                 <CardContent className="mb-5">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className=" grid gap-5 md:grid-cols-2">
-                            {/* Title Field */}
-                            <FormField
-                                control={form.control}
-                                name="name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Name <span className="text-red-500">*</span> </FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Enter name..." {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
 
-                            {/* Slug Field */}
+                            {/* product Select field */}
                             <FormField
                                 control={form.control}
-                                name="slug"
+                                name="product"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Slug<span className="text-red-500">*</span></FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Slug..." readOnly {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {/* Select field */}
-                            <FormField
-                                control={form.control}
-                                name="category"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Category<span className="text-red-500">*</span></FormLabel>
+                                        <FormLabel>Product<span className="text-red-500">*</span></FormLabel>
                                         <FormControl>
                                             <Select
-                                                options={categoryOption}
+                                                options={productOption}
+                                                selected={field.value}
+                                                setSelected={field.onChange}
+                                                isMulti={false}
+
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Sku Field */}
+                            <FormField
+                                control={form.control}
+                                name="sku"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>SKU<span className="text-red-500">*</span> </FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Enter sku..." {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Color Field */}
+                            <FormField
+                                control={form.control}
+                                name="color"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Color<span className="text-red-500">*</span></FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Enter color..." {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Size Field */}
+                            <FormField
+                                control={form.control}
+                                name="size"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Size<span className="text-red-500">*</span></FormLabel>
+                                        <FormControl>
+                                            <Select
+                                                options={sizes}
                                                 selected={field.value}
                                                 setSelected={field.onChange}
                                                 isMulti={false}
@@ -229,17 +238,6 @@ const AddProduct = () => {
                                 )}
                             />
 
-                            {/* Ck editors Field */}
-                            <div className="md:col-span-2">
-                                <FormLabel className="mb-2">Description<span className="text-red-500">*</span></FormLabel>
-                                <Editor
-                                    onChange={editor}
-                                // initialData={field.value}
-                                />
-                                <FormMessage />
-                            </div>
-
-
                             <div className="md:col-span-2 border-2 border-dashed rounded p-5 text-center">
                                 <MediaModal
                                     open={open}
@@ -276,7 +274,7 @@ const AddProduct = () => {
                             {/* Submit Button */}
                             <ButtonLoading
                                 type="submit"
-                                text="Add Product"
+                                text="Add Product Variant"
                                 variant="default"
                                 loading={form.formState.isSubmitting}
                                 className="ml-auto mt-2 cursor-pointer"
