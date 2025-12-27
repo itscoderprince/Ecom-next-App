@@ -9,7 +9,7 @@ const assistant = Assistant({
 });
 
 export const metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://panda-bees.vercel.app/"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000/"),
   title: {
     default: "Panda Bees | Premium Online Shopping",
     template: "%s | Panda Bees"
