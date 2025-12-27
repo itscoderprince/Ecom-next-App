@@ -4,7 +4,7 @@ import { jwtVerify } from "jose";
 import { NextResponse } from "next/server";
 
 // Middleware
-export async function proxy(req) {
+export async function middleware(req) {
     try {
         const pathname = req.nextUrl.pathname
         const hasToken = req.cookies.has("access_token")
