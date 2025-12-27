@@ -12,7 +12,6 @@ export async function proxy(req) {
             if (!pathname.startsWith('/auth')) {
                 return NextResponse.redirect(new URL(WEBSITE_LOGIN, req.nextUrl))
             }
-
             return NextResponse.next();
         }
 
