@@ -76,7 +76,7 @@ export async function POST(req) {
     const cookieStore = await cookies();
     cookieStore.set("access_token", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production" && process.env.NEXT_PUBLIC_BASE_URL?.startsWith("https"),
       sameSite: "lax",
       path: "/",
       maxAge: 60 * 60 * 24 * 7,
