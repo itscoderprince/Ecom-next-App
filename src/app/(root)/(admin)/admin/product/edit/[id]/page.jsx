@@ -38,7 +38,7 @@ const EditProduct = ({ params }) => {
         { href: "", label: "Edit Product" },
     ];
 
-    const { data: getCategory } = useFetch('/api/category?deleteType=SD&&size=1000')
+    const { data: getCategory } = useFetch('/api/category?deleteType=SD&size=1000')
     const { data: getSingleProduct, loading: getProductLoading } = useFetch(`/api/product/get/${id}`)
 
     // Media modlal states

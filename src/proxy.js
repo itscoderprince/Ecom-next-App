@@ -3,7 +3,7 @@ import { USER_DASHBOARD, WEBSITE_LOGIN } from "@/routes/Website.route"
 import { jwtVerify } from "jose";
 import { NextResponse } from "next/server";
 
-export async function middleware(req) {
+export async function proxy(req) {
     try {
         const pathname = req.nextUrl.pathname
         const hasToken = req.cookies.has("access_token")

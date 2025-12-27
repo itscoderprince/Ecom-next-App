@@ -1,14 +1,12 @@
 import { isAuthenticated } from "@/lib/authentication";
 import { connectDB } from "@/lib/db";
 import { catchError, response } from "@/lib/helperFunction";
-import { ProductModel } from "@/models/productModel";
+import { ProductVariantModel } from "@/models/productVariantModel";
 
 export async function PUT(req) {
   try {
     const auth = await isAuthenticated("admin");
-
     if (!auth.isAuth) return response(false, 403, "Unauthorize.");
-
     await connectDB();
 
     const payload = await req.json();
@@ -19,7 +17,9 @@ export async function PUT(req) {
       return response(false, 400, "Invalid or empty ids list.");
     }
 
-    const product = await ProductModel.find({ _id: { $in: ids } }).lean();
+    const product = await ProductVariantModel.find({
+      _id: { $in: ids },
+    }).lean();
     if (!product.length) return response(false, 400, "Data not found!");
 
     if (!["SD", "RSD"].includes(deleteType)) {
@@ -27,21 +27,20 @@ export async function PUT(req) {
     }
 
     if (deleteType === "SD") {
-      await ProductModel.updateMany(
+      await ProductVariantModel.updateMany(
         { _id: { $in: ids } },
-        { $set: { deletedAt: new Date() } }
+        { $set: { deletedAt: new Date() } },
       );
       return response(true, 200, "Data moved into trash.");
     }
 
-    await ProductModel.updateMany(
+    await ProductVariantModel.updateMany(
       { _id: { $in: ids } },
-      { $set: { deletedAt: null } }
+      { $set: { deletedAt: null } },
     );
 
     return response(true, 200, "Data restored successfully.");
   } catch (error) {
-
     return catchError(error);
   }
 }
@@ -61,7 +60,9 @@ export async function DELETE(req) {
       return response(false, 400, "Invalid or empty ids list.");
     }
 
-    const product = await ProductModel.find({ _id: { $in: ids } }).lean();
+    const product = await ProductVariantModel.find({
+      _id: { $in: ids },
+    }).lean();
 
     if (!product.length) return response(false, 400, "Data not found!");
 
@@ -69,7 +70,7 @@ export async function DELETE(req) {
       return response(false, 400, "Invalid deleteType.");
     }
 
-    await ProductModel.deleteMany({ _id: { $in: ids } });
+    await ProductVariantModel.deleteMany({ _id: { $in: ids } });
 
     return response(true, 200, "Data deleted permanently.");
   } catch (error) {

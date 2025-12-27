@@ -2,23 +2,23 @@ import { isAuthenticated } from "@/lib/authentication";
 import { connectDB } from "@/lib/db";
 import { catchError, response } from "@/lib/helperFunction";
 import { ProductModel } from "@/models/productModel";
+import { ProductVariantModel } from "@/models/productVariantModel";
 
 export async function GET(req) {
-    try {
-        const auth = await isAuthenticated("admin");
-        if (!auth.isAuth) response(false, 403, "Unauthorize!");
+  try {
+    const auth = await isAuthenticated("admin");
+    if (!auth.isAuth) response(false, 403, "Unauthorize!");
+    await connectDB();
 
-        await connectDB();
+    const filter = { deletedAt: null };
+    const getProductVariant = await ProductVariantModel.find(filter)
+      .select("-media")
+      .sort({ createdAt: -1 })
+      .lean();
+    if (!getProductVariant) return response(false, 404, "Data not found!");
 
-        const filter = { deletedAt: null };
-        const getProduct = await ProductModel.find(filter).select('-media -description').sort({ createdAt: -1 }).lean()
-        if (!getProduct) return response(false, 404, "Data not found!")
-
-
-        return response(true, 200, "Data found!", getProduct)
-
-
-    } catch (error) {
-        return catchError(error);
-    }
+    return response(true, 200, "Data found!", getProductVariant);
+  } catch (error) {
+    return catchError(error);
+  }
 }

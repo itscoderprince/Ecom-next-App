@@ -2,7 +2,7 @@ import { isAuthenticated } from "@/lib/authentication";
 import { connectDB } from "@/lib/db";
 import { catchError, response } from "@/lib/helperFunction";
 import { zSchema } from "@/lib/zodSchema";
-import { ProductVariantModel } from "@/models/ProductVatiantModel";
+import { ProductVariantModel } from "@/models/productVariantModel";
 
 export async function POST(req) {
   try {
@@ -21,7 +21,7 @@ export async function POST(req) {
         mrp: true,
         sellingPrice: true,
         discountPercentage: true,
-        media: true
+        media: true,
       })
       .safeParse(payload);
 
@@ -37,12 +37,22 @@ export async function POST(req) {
       mrp,
       sellingPrice,
       discountPercentage,
-      media } = validation.data;
+      media,
+    } = validation.data;
 
-    const newProductVariant = new ProductVariantModel({ product, sku, color, size, mrp, sellingPrice, discountPercentage, media });
+    const newProductVariant = new ProductVariantModel({
+      product,
+      sku,
+      color,
+      size,
+      mrp,
+      sellingPrice,
+      discountPercentage,
+      media,
+    });
     await newProductVariant.save();
 
-    return response(true, 200, "Product added successfully");
+    return response(true, 200, "Product variant added successfully");
   } catch (error) {
     return catchError(error);
   }

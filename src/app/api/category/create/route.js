@@ -8,7 +8,6 @@ export async function POST(req) {
   try {
     const auth = await isAuthenticated("admin");
     if (!auth.isAuth) return response(false, 403, "Unauthorized!");
-
     await connectDB();
 
     const payload = await req.json();

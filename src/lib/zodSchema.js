@@ -45,6 +45,10 @@ export const zSchema = z
     sku: z.string().min(3, 'SKU is required.'),
     color: z.string().min(3, 'Color is required.'),
     size: z.string().min(1, 'Size is required.'),
+    code: z.string().min(3, 'Code is required.'),
+    discountPercentage: z.coerce.number().min(0, 'Discount must be non-negative').max(100, 'Discount cannot exceed 100%'),
+    minShoppingAmount: z.coerce.number().positive('Min Shopping Amount must be a positive number'),
+    validity: z.coerce.date({ required_error: 'Validity is required.' }),
   })
 
   .refine((data) => data.password === data.confirmPassword, {

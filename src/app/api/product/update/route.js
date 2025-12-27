@@ -32,22 +32,22 @@ export async function PUT(req) {
     }
     const { _id, name, slug, category, mrp, sellingPrice, discountPercentage, description, media } = validation.data;
 
-    const getProduct = await ProductModel.findOne({
+    const product = await ProductModel.findOne({
       deletedAt: null,
       _id
     });
 
-    if (!getProduct) return response(false, 404, "Data not found .");
+    if (!product) return response(false, 404, "Data not found .");
 
-    getProduct.name = name
-    getProduct.slug = slug
-    getProduct.category = category
-    getProduct.mrp = mrp
-    getProduct.sellingPrice = sellingPrice
-    getProduct.discountPercentage = discountPercentage
-    getProduct.description = encode(description)
-    getProduct.media = media
-    await getProduct.save()
+    product.name = name
+    product.slug = slug
+    product.category = category
+    product.mrp = mrp
+    product.sellingPrice = sellingPrice
+    product.discountPercentage = discountPercentage
+    product.description = encode(description)
+    product.media = media
+    await product.save()
 
 
     return response(true, 201, "Product updated successfully");

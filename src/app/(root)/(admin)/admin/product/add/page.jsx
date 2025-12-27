@@ -37,7 +37,7 @@ const AddProduct = () => {
     ];
 
     const [categoryOption, setCategoryOption] = useState([])
-    const { data: getCategory } = useFetch('/api/category?deleteType=SD&&size=1000')
+    const { data: getCategory } = useFetch('/api/category?deleteType=SD&size=1000')
 
     // Media modlal states
     const [open, setOpen] = useState(false)
@@ -234,7 +234,6 @@ const AddProduct = () => {
                                 <FormLabel className="mb-2">Description<span className="text-red-500">*</span></FormLabel>
                                 <Editor
                                     onChange={editor}
-                                // initialData={field.value}
                                 />
                                 <FormMessage />
                             </div>
