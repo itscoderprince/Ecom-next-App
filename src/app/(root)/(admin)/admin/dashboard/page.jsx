@@ -6,9 +6,9 @@ import { OrderOverview } from "@/components/Application/Admin/OrderOverview";
 import { OrderStatus } from "@/components/Application/Admin/OrderStatus";
 import { OrderSummary } from "@/components/Application/Admin/OrderSummary";
 import { LatestReview } from "@/components/Application/Admin/LatestReview";
-import { ADMIN_PRODUCT_SHOW, ADMIN_REVIEW_SHOW } from "@/routes/AdminPanel.route";
+import { ADMIN_REVIEW_SHOW } from "@/routes/AdminPanel.route";
 
-const ADMIN_ORDER_SHOW = "/admin/orders"; // Assuming this route, as it wasn't exported
+const ADMIN_ORDER_SHOW = "/admin/orders";
 
 const page = () => {
   return (
@@ -47,7 +47,7 @@ const page = () => {
           title="Latest Orders"
           className="lg:col-span-2"
           contentClassName="p-0"
-          actionText="View All" // Default, but explicit for clarity
+          actionText="View All"
           actionLink={ADMIN_ORDER_SHOW}
         >
           <OrderSummary />

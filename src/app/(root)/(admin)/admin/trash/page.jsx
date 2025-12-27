@@ -1,6 +1,6 @@
 "use client";
 
-import BreadCrumb from "@/components/Application/Admin/BreadCrumb";
+import AdminBreadcrumb from "@/components/Application/Admin/AdminBreadcrumb";
 import DatatableWrapper from "@/components/Application/Admin/DatatableWrapper";
 import DeleteAction from "@/components/Application/Admin/DeleteAction";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -93,7 +93,7 @@ const Trash = () => {
   if (!config) {
     return (
       <div className="p-4">
-        <BreadCrumb breadcrumbData={breadcrumbData} />
+        <AdminBreadcrumb breadcrumbData={breadcrumbData} />
         <Card className="py-10 rounded shadow-sm text-center">
           <h4 className="font-semibold text-xl">Trash category not found</h4>
           <p className="text-muted-foreground">
@@ -107,7 +107,7 @@ const Trash = () => {
   return (
     <div>
       {/* Breadcrumb Navigation */}
-      <BreadCrumb breadcrumbData={breadcrumbData} />
+      <AdminBreadcrumb breadcrumbData={breadcrumbData} />
 
       <Card className="py-0 rounded shadow-sm gap-0">
         <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">

@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import BreadCrumb from "@/components/Application/Admin/BreadCrumb";
+import AdminBreadcrumb from "@/components/Application/Admin/AdminBreadcrumb";
 import { ButtonLoading } from "@/components/Application/ButtonLoading";
 
 import { zSchema } from "@/lib/zodSchema";
@@ -83,7 +83,7 @@ const EditCoupon = ({ params }) => {
 
     return (
         <div className="space-y-6">
-            <BreadCrumb breadcrumbData={breadcrumbData} />
+            <AdminBreadcrumb breadcrumbData={breadcrumbData} />
 
             <Card className="rounded-md shadow-sm border-muted">
                 <CardHeader className="border-b py-3 px-4">

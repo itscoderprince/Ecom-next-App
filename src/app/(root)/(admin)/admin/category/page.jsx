@@ -1,6 +1,6 @@
 'use client'
 
-import BreadCrumb from "@/components/Application/Admin/BreadCrumb";
+import AdminBreadcrumb from "@/components/Application/Admin/AdminBreadcrumb";
 import DatatableWrapper from "@/components/Application/Admin/DatatableWrapper";
 import EditAction from "@/components/Application/Admin/EditAction";
 import DeleteAction from "@/components/Application/Admin/DeleteAction";
@@ -41,7 +41,7 @@ const ShowCategory = () => {
   return (
     <div>
       {/* Breadcrumb Navigation */}
-      <BreadCrumb breadcrumbData={breadcrumbData} />
+      <AdminBreadcrumb breadcrumbData={breadcrumbData} />
 
       <Card className="py-0 rounded shadow-sm gap-0">
         <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">

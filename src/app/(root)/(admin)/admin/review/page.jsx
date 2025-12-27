@@ -1,6 +1,6 @@
 "use client";
 
-import BreadCrumb from "@/components/Application/Admin/BreadCrumb";
+import AdminBreadcrumb from "@/components/Application/Admin/AdminBreadcrumb";
 import DatatableWrapper from "@/components/Application/Admin/DatatableWrapper";
 import DeleteAction from "@/components/Application/Admin/DeleteAction";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -39,7 +39,7 @@ const ShowReview = () => {
 
   return (
     <div className="space-y-4">
-      <BreadCrumb breadcrumbData={breadcrumbData} />
+      <AdminBreadcrumb breadcrumbData={breadcrumbData} />
 
       <Card className="rounded shadow-sm py-3">
         <CardHeader className="px-4 [.border-b]:pb-0 border-b">

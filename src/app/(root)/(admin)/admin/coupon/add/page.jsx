@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import BreadCrumb from "@/components/Application/Admin/BreadCrumb";
+import AdminBreadcrumb from "@/components/Application/Admin/AdminBreadcrumb";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -72,7 +72,7 @@ const AddCoupon = () => {
 
     return (
         <div className="space-y-6">
-            <BreadCrumb breadcrumbData={breadcrumbData} />
+            <AdminBreadcrumb breadcrumbData={breadcrumbData} />
 
             <Card className="rounded-md shadow-sm border-muted">
                 <CardHeader className="border-b [.border-b]:pb-1 px-3">

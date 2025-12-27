@@ -22,11 +22,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import slugify from "slugify";
-import BreadCrumb from "@/components/Application/Admin/BreadCrumb";
+import AdminBreadcrumb from "@/components/Application/Admin/AdminBreadcrumb";
 import useFetch from "@/hooks/useFetch";
 import Select from "@/components/Application/Select";
 import Editor from "@/components/Application/Admin/Editor";
 import MediaModal from "@/components/Application/Admin/MediaModal";
+import { Edit2Icon, FileText, IndianRupee, Layers, Link, Percent } from "lucide-react";
 import Image from "next/image";
 
 const EditProduct = ({ params }) => {
@@ -146,11 +147,16 @@ const EditProduct = ({ params }) => {
     return (
         <div>
             {/* Breadcrumb Navigation */}
-            <BreadCrumb breadcrumbData={breadcrumbData} />
+            <AdminBreadcrumb breadcrumbData={breadcrumbData} />
 
             <Card className="py-0 rounded shadow-sm">
                 <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
-                    <h4 className="font-semibold text-xl">Edit Product</h4>
+                    <h4 className="font-semibold text-xl flex items-center gap-2 ml-2">
+                        Edit Product
+                        <span className="p-1.5 rounded-full bg-primary/10 text-primary">
+                            <Edit2Icon className="w-4 h-4" />
+                        </span>
+                    </h4>
                 </CardHeader>
 
                 <CardContent className="mb-5">
@@ -164,7 +170,10 @@ const EditProduct = ({ params }) => {
                                     <FormItem>
                                         <FormLabel>Name <span className="text-red-500">*</span> </FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Enter name..." {...field} />
+                                            <div className="relative">
+                                                <FileText className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Input placeholder="Enter name..." {...field} className="pl-9" />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -179,7 +188,10 @@ const EditProduct = ({ params }) => {
                                     <FormItem>
                                         <FormLabel>Slug<span className="text-red-500">*</span></FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Slug..." readOnly {...field} />
+                                            <div className="relative">
+                                                <Link className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Input placeholder="Slug..." readOnly {...field} className="pl-9" />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -194,13 +206,16 @@ const EditProduct = ({ params }) => {
                                     <FormItem>
                                         <FormLabel>Category<span className="text-red-500">*</span></FormLabel>
                                         <FormControl>
-                                            <Select
-                                                options={categoryOption}
-                                                selected={field.value}
-                                                setSelected={field.onChange}
-                                                isMulti={false}
-
-                                            />
+                                            <div className="relative">
+                                                <Layers className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground z-10" />
+                                                <Select
+                                                    options={categoryOption}
+                                                    selected={field.value}
+                                                    setSelected={field.onChange}
+                                                    isMulti={false}
+                                                    className="pl-9"
+                                                />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -215,7 +230,10 @@ const EditProduct = ({ params }) => {
                                     <FormItem>
                                         <FormLabel>Mrp<span className="text-red-500">*</span></FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Mrp..." {...field} />
+                                            <div className="relative">
+                                                <IndianRupee className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Input placeholder="Mrp..." {...field} className="pl-9" />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -230,7 +248,10 @@ const EditProduct = ({ params }) => {
                                     <FormItem>
                                         <FormLabel>Selling Price<span className="text-red-500">*</span></FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Selling Price..." {...field} />
+                                            <div className="relative">
+                                                <IndianRupee className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Input placeholder="Selling Price..." {...field} className="pl-9" />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -245,7 +266,10 @@ const EditProduct = ({ params }) => {
                                     <FormItem>
                                         <FormLabel>Discount Percentage<span className="text-red-500">*</span></FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Discount Percentage..." {...field} readOnly />
+                                            <div className="relative">
+                                                <Percent className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Input placeholder="Discount Percentage..." {...field} readOnly className="pl-9" />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -302,14 +326,15 @@ const EditProduct = ({ params }) => {
                                 </div>
                             </div>
 
-                            {/* Submit Button */}
-                            <ButtonLoading
-                                type="submit"
-                                text="Update Product"
-                                variant="default"
-                                loading={form.formState.isSubmitting}
-                                className="ml-auto mt-2 cursor-pointer"
-                            />
+                            <div className="flex justify-end col-span-2">
+                                <ButtonLoading
+                                    type="submit"
+                                    text="Update Product"
+                                    variant="default"
+                                    loading={form.formState.isSubmitting}
+                                    className="ml-auto mt-2 cursor-pointer"
+                                />
+                            </div>
                         </form>
                     </Form>
                 </CardContent>

@@ -25,6 +25,7 @@ function Select({
     setSelected,
     placeholder = "Select options",
     isMulti = false, // Added prop to determine if multi-select is enabled
+    className // Added className prop
 }) {
     const [open, setOpen] = useState(false);
 
@@ -59,7 +60,7 @@ function Select({
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="justify-between dark:bg-card"
+                    className={cn("justify-between dark:bg-card", className)}
                 >
                     <div>
 

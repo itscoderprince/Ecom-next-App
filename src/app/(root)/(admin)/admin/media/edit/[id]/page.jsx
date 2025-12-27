@@ -22,7 +22,7 @@ import { zSchema } from "@/lib/zodSchema";
 import Image from "next/image";
 import { toast } from "sonner";
 import axios from "axios";
-import BreadCrumb from "@/components/Application/Admin/BreadCrumb";
+import AdminBreadcrumb from "@/components/Application/Admin/AdminBreadcrumb";
 
 const breadcrumbData = [
   { href: ADMIN_DASHBOARD, label: "Home" },
@@ -92,7 +92,7 @@ const EditMedia = ({ params }) => {
   // ===== UI =====
   return (
     <div>
-      <BreadCrumb breadcrumbData={breadcrumbData} />
+      <AdminBreadcrumb breadcrumbData={breadcrumbData} />
 
       <Card className="py-0 rounded shadow-sm">
         <CardHeader className="pt-3 px-3 border-b">

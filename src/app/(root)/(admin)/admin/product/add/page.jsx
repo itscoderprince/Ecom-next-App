@@ -22,11 +22,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import slugify from "slugify";
-import BreadCrumb from "@/components/Application/Admin/BreadCrumb";
+import AdminBreadcrumb from "@/components/Application/Admin/AdminBreadcrumb";
 import useFetch from "@/hooks/useFetch";
 import Select from "@/components/Application/Select";
 import Editor from "@/components/Application/Admin/Editor";
 import MediaModal from "@/components/Application/Admin/MediaModal";
+import { FileText, IndianRupee, Layers, Link, Percent } from "lucide-react";
 import Image from "next/image";
 
 const AddProduct = () => {
@@ -123,7 +124,7 @@ const AddProduct = () => {
     return (
         <div>
             {/* Breadcrumb Navigation */}
-            <BreadCrumb breadcrumbData={breadcrumbData} />
+            <AdminBreadcrumb breadcrumbData={breadcrumbData} />
 
             <Card className="py-0 rounded shadow-sm">
                 <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
@@ -132,7 +133,7 @@ const AddProduct = () => {
 
                 <CardContent className="mb-5">
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className=" grid gap-5 md:grid-cols-2">
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-5 md:grid-cols-2">
                             {/* Title Field */}
                             <FormField
                                 control={form.control}
@@ -141,7 +142,10 @@ const AddProduct = () => {
                                     <FormItem>
                                         <FormLabel>Name <span className="text-red-500">*</span> </FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Enter name..." {...field} />
+                                            <div className="relative">
+                                                <FileText className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Input placeholder="Enter name..." {...field} className="pl-9" />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -156,7 +160,10 @@ const AddProduct = () => {
                                     <FormItem>
                                         <FormLabel>Slug<span className="text-red-500">*</span></FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Slug..." readOnly {...field} />
+                                            <div className="relative">
+                                                <Link className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Input placeholder="Slug..." readOnly {...field} className="pl-9" />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -171,13 +178,16 @@ const AddProduct = () => {
                                     <FormItem>
                                         <FormLabel>Category<span className="text-red-500">*</span></FormLabel>
                                         <FormControl>
-                                            <Select
-                                                options={categoryOption}
-                                                selected={field.value}
-                                                setSelected={field.onChange}
-                                                isMulti={false}
-
-                                            />
+                                            <div className="relative">
+                                                <Layers className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground z-10" />
+                                                <Select
+                                                    options={categoryOption}
+                                                    selected={field.value}
+                                                    setSelected={field.onChange}
+                                                    isMulti={false}
+                                                    className="pl-9"
+                                                />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -192,7 +202,10 @@ const AddProduct = () => {
                                     <FormItem>
                                         <FormLabel>Mrp<span className="text-red-500">*</span></FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Mrp..." {...field} />
+                                            <div className="relative">
+                                                <IndianRupee className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Input placeholder="Mrp..." {...field} className="pl-9" />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -207,7 +220,10 @@ const AddProduct = () => {
                                     <FormItem>
                                         <FormLabel>Selling Price<span className="text-red-500">*</span></FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Selling Price..." {...field} />
+                                            <div className="relative">
+                                                <IndianRupee className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Input placeholder="Selling Price..." {...field} className="pl-9" />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -222,7 +238,10 @@ const AddProduct = () => {
                                     <FormItem>
                                         <FormLabel>Discount Percentage<span className="text-red-500">*</span></FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Discount Percentage..." {...field} readOnly />
+                                            <div className="relative">
+                                                <Percent className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                                <Input placeholder="Discount Percentage..." {...field} readOnly className="pl-9" />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -271,15 +290,15 @@ const AddProduct = () => {
                                     <span className="text-gray-500 dark:text-gray-400">Select Media</span>
                                 </div>
                             </div>
-
-                            {/* Submit Button */}
-                            <ButtonLoading
-                                type="submit"
-                                text="Add Product"
-                                variant="default"
-                                loading={form.formState.isSubmitting}
-                                className="ml-auto mt-2 cursor-pointer"
-                            />
+                            <div className="flex justify-end col-span-2">
+                                <ButtonLoading
+                                    type="submit"
+                                    text="Add Product"
+                                    variant="default"
+                                    loading={form.formState.isSubmitting}
+                                    className="ml-auto mt-2 cursor-pointer"
+                                />
+                            </div>
                         </form>
                     </Form>
                 </CardContent>

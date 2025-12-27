@@ -17,7 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import useDeleteMutation from "@/hooks/useDeleteMutation";
 import { Loader2 } from "lucide-react";
 import { ButtonLoading } from "@/components/Application/ButtonLoading";
-import BreadCrumb from "@/components/Application/Admin/BreadCrumb";
+import AdminBreadcrumb from "@/components/Application/Admin/AdminBreadcrumb";
 import ConfirmDialog from "@/components/Application/ConfirmDialog";
 
 const MediaPage = () => {
@@ -122,7 +122,7 @@ const MediaPage = () => {
 
   return (
     <div>
-      <BreadCrumb breadcrumbData={breadcrumbData} />
+      <AdminBreadcrumb breadcrumbData={breadcrumbData} />
 
       <Card className="py-0 rounded shadow-sm relative">
         {/* Loader Overlay */}

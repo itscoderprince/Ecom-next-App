@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import slugify from "slugify";
-import BreadCrumb from "@/components/Application/Admin/BreadCrumb";
+import AdminBreadcrumb from "@/components/Application/Admin/AdminBreadcrumb";
 import useFetch from "@/hooks/useFetch";
 
 
@@ -84,7 +84,7 @@ const EditCategory = ({ params }) => {
   return (
     <div>
       {/* Breadcrumb Navigation */}
-      <BreadCrumb breadcrumbData={breadcrumbData} />
+      <AdminBreadcrumb breadcrumbData={breadcrumbData} />
 
       <Card className="py-0 rounded shadow-sm">
         <CardHeader className="pt-3 px-3 border-b">

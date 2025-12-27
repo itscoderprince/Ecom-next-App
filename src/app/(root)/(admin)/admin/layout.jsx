@@ -17,7 +17,7 @@ const AdminDashboard = ({ children }) => {
         <SidebarInset className="flex flex-col h-screen overflow-hidden">
           <Topbar />
 
-          <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+          <main className="flex-1 overflow-y-auto p-4  md:p-6 space-y-6">
             {children}
 
             <div className="border-t pt-4 mt-auto text-center text-sm text-muted-foreground pb-4">

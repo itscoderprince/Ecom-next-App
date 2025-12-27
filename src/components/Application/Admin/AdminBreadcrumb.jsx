@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import React from "react";
 
-const BreadCrumb = ({ breadcrumbData = [] }) => {
+const AdminBreadcrumb = ({ breadcrumbData = [] }) => {
   return (
     <Breadcrumb className="mb-3">
       <BreadcrumbList>
@@ -39,4 +39,4 @@ const BreadCrumb = ({ breadcrumbData = [] }) => {
   );
 };
 
-export default BreadCrumb;
+export default AdminBreadcrumb;
