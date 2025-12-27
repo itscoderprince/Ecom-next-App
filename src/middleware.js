@@ -16,6 +16,7 @@ export default async function middleware(req) {
             return NextResponse.next();
         }
 
+        // Token
         const access_token = req.cookies.get("access_token")
         const { payload } = await jwtVerify(access_token.value, new TextEncoder().encode(process.env.SECRET_KEY));
 
