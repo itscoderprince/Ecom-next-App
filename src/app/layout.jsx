@@ -1,12 +1,6 @@
 import "./globals.css";
-import { Assistant } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import GlobalProvider from "@/components/Application/GlobalProvider";
-
-const assistant = Assistant({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
 
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000/"),
@@ -20,7 +14,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${assistant.className} antialiased`}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap" rel="stylesheet" />
+      </head>
+      <body className={`antialiased`}>
         <GlobalProvider>
           {children}
           <Toaster />

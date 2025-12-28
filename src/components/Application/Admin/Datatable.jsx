@@ -57,7 +57,6 @@ const DataTable = ({
   });
   const [rowSelection, setRowSelection] = useState({});
   const [exportLoading, setExportLoading] = useState(false);
-  const [selectedRows, setSelectedRows] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [deletePayload, setDeletePayload] = useState(null);
 

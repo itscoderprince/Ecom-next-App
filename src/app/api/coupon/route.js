@@ -1,14 +1,15 @@
 import { isAuthenticated } from "@/lib/authentication";
 import { connectDB } from "@/lib/db";
-import { catchError, response } from "@/lib/helperFunction";
+import { catchError, successResponse } from "@/lib/helperFunction";
 import { couponModel } from "@/models/couponModel";
-import { ProductModel } from "@/models/productModel";
-import { NextResponse } from "next/server";
 
 export async function GET(request) {
   try {
     const auth = await isAuthenticated("admin");
-    if (!auth.isAuth) return response(false, 403, "Unauthorized.");
+    if (!auth.isAuth) {
+      return catchError({ status: 403, message: "Unauthorized access." });
+    }
+
     await connectDB();
 
     const searchParams = request.nextUrl.searchParams;
@@ -28,7 +29,7 @@ export async function GET(request) {
       matchQuery = { deletedAt: { $ne: null } };
     }
 
-    // Global filter
+    // Global filter logic
     if (globalFilter) {
       matchQuery["$or"] = [
         { code: { $regex: globalFilter, $options: "i" } },
@@ -53,13 +54,10 @@ export async function GET(request) {
       ];
     }
 
-    // Column filter
+    // Column specific filter logic
     if (filters.length > 0) {
       filters.forEach((filter) => {
-        if (
-          filter.id === "minShoppingAmount" ||
-          filter.id === "discountPercentage"
-        ) {
+        if (["minShoppingAmount", "discountPercentage"].includes(filter.id)) {
           matchQuery[filter.id] = Number(filter.value);
         } else if (filter.id === "validity") {
           matchQuery[filter.id] = new Date(filter.value);
@@ -69,7 +67,7 @@ export async function GET(request) {
       });
     }
 
-    // Sorting
+    // Sorting logic
     let sortQuery = {};
     if (sorting.length > 0) {
       sorting.forEach((sort) => {
@@ -77,7 +75,7 @@ export async function GET(request) {
       });
     }
 
-    // Aggregation pipeline
+    // Aggregation pipeline for coupon listing
     const pipeline = [
       { $match: matchQuery },
       { $sort: Object.keys(sortQuery).length ? sortQuery : { createdAt: -1 } },
@@ -97,18 +95,13 @@ export async function GET(request) {
       },
     ];
 
-    // Execute query
-    const getCoupon = await couponModel.aggregate(pipeline);
+    const [getCoupon, totalRowCount] = await Promise.all([
+      couponModel.aggregate(pipeline),
+      couponModel.countDocuments(matchQuery)
+    ]);
 
-    // Get total row count
-    const totalRowCount = await couponModel.countDocuments(matchQuery);
+    return successResponse("Coupon list fetched successfully", getCoupon, 200, { totalRowCount });
 
-    return NextResponse.json({
-      success: true,
-      message: "Product list",
-      data: getCoupon,
-      meta: { totalRowCount },
-    });
   } catch (error) {
     return catchError(error);
   }

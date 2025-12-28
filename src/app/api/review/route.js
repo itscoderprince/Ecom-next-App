@@ -1,13 +1,15 @@
 import { isAuthenticated } from "@/lib/authentication";
 import { connectDB } from "@/lib/db";
-import { catchError, response } from "@/lib/helperFunction";
+import { catchError, successResponse } from "@/lib/helperFunction";
 import { ReviewModel } from "@/models/reviewModel";
-import { NextResponse } from "next/server";
 
 export async function GET(request) {
   try {
     const auth = await isAuthenticated("admin");
-    if (!auth.isAuth) return response(false, 403, "Unauthorized.");
+    if (!auth.isAuth) {
+      return catchError({ status: 403, message: "Unauthorized access." });
+    }
+
     await connectDB();
 
     const searchParams = request.nextUrl.searchParams;
@@ -27,7 +29,7 @@ export async function GET(request) {
       matchQuery = { deletedAt: { $ne: null } };
     }
 
-    // Global filter
+    // Global filter logic
     if (globalFilter) {
       matchQuery["$or"] = [
         { "productData.name": { $regex: globalFilter, $options: "i" } },
@@ -38,26 +40,20 @@ export async function GET(request) {
       ];
     }
 
-    // Column filter
+    // Column specific filter logic
     if (filters.length > 0) {
       filters.forEach((filter) => {
         if (filter.id === "product") {
-          matchQuery["productData.name"] = {
-            $regex: filter.value,
-            $options: "i",
-          };
+          matchQuery["productData.name"] = { $regex: filter.value, $options: "i" };
         } else if (filter.id === "user") {
-          matchQuery["userData.name"] = {
-            $regex: filter.value,
-            $options: "i",
-          };
+          matchQuery["userData.name"] = { $regex: filter.value, $options: "i" };
         } else {
           matchQuery[filter.id] = { $regex: filter.value, $options: "i" };
         }
       });
     }
 
-    // Sorting
+    // Sorting logic
     let sortQuery = {};
     if (sorting.length > 0) {
       sorting.forEach((sort) => {
@@ -65,7 +61,7 @@ export async function GET(request) {
       });
     }
 
-    // Aggregation pipeline
+    // Aggregation pipeline for review listing with product and user info
     const pipeline = [
       {
         $lookup: {
@@ -108,18 +104,13 @@ export async function GET(request) {
       },
     ];
 
-    // Execute query
-    const getReview = await ReviewModel.aggregate(pipeline);
+    const [getReview, totalRowCount] = await Promise.all([
+      ReviewModel.aggregate(pipeline),
+      ReviewModel.countDocuments(matchQuery)
+    ]);
 
-    // Get total row count
-    const totalRowCount = await ReviewModel.countDocuments(matchQuery);
+    return successResponse("Review list fetched successfully", getReview, 200, { totalRowCount });
 
-    return NextResponse.json({
-      success: true,
-      message: "Product list",
-      data: getReview,
-      meta: { totalRowCount },
-    });
   } catch (error) {
     return catchError(error);
   }

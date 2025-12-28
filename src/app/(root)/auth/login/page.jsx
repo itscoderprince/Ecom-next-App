@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { zSchema } from "@/lib/zodSchema";
+import { baseSchema, zSchema } from "@/lib/zodSchema";
 import { ButtonLoading } from "@/components/Application/ButtonLoading";
 import z from "zod";
 import {
@@ -36,7 +36,7 @@ const LoginPage = () => {
   const [showPsw, setShowPsw] = useState(false);
   const [otpEmail, setOtpEmail] = useState("");
 
-  const formSchema = zSchema
+  const formSchema = baseSchema
     .pick({
       email: true,
     })

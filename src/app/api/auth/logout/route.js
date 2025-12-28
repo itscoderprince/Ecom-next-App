@@ -1,5 +1,5 @@
 import { connectDB } from "@/lib/db";
-import { catchError, response } from "@/lib/helperFunction";
+import { catchError, successResponse } from "@/lib/helperFunction";
 import { cookies } from "next/headers";
 
 export async function POST() {
@@ -8,9 +8,8 @@ export async function POST() {
     const cookieStore = await cookies();
     cookieStore.delete("access_token");
 
-    return response(true, 200, "Logout successfully.");
+    return successResponse("Logged out successfully.");
   } catch (error) {
-    console.log(error);
     return catchError(error);
   }
 }

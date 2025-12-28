@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { zSchema } from "@/lib/zodSchema";
+import { baseSchema, zSchema } from "@/lib/zodSchema";
 import { ButtonLoading } from "@/components/Application/ButtonLoading";
 import {
   Form,
@@ -29,7 +29,7 @@ const Register = () => {
   const [showPsw, setShowPsw] = useState(false);
   const [showConfirmPsw, setShowConfirmPsw] = useState(false);
 
-  const formSchema = zSchema.pick({
+  const formSchema = baseSchema.pick({
     name: true,
     email: true,
     password: true,

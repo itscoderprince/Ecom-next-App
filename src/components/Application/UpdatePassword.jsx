@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { zSchema } from "@/lib/zodSchema";
+import { baseSchema, zSchema } from "@/lib/zodSchema";
 import { ButtonLoading } from "@/components/Application/ButtonLoading";
 import {
     Form,
@@ -23,12 +23,12 @@ import { WEBSITE_LOGIN } from "@/routes/Website.route";
 
 const UpdatePassword = ({ email }) => {
     console.log(email);
-    
+
     const router = useRouter();
     const [showPsw, setShowPsw] = useState(false);
     const [showConfirmPsw, setShowConfirmPsw] = useState(false);
 
-    const formSchema = zSchema.pick({
+    const formSchema = baseSchema.pick({
         email: true,
         password: true,
     });

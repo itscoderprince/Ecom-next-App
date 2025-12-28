@@ -1,10 +1,4 @@
 import { createTheme } from "@mui/material";
-import { Assistant } from "next/font/google";
-const assistantFont = Assistant({
-  weight: ["400", "500", "600", "700", "800"],
-  display: "swap",
-  subsets: ["latin"],
-});
 
 export const lightTheme = createTheme({
   colorSchemes: {
@@ -39,7 +33,7 @@ export const lightTheme = createTheme({
     },
   },
   typography: {
-    fontFamily: assistantFont.style.fontFamily,
+    fontFamily: '"Assistant", "sans-serif"',
   },
   shadows: {
     0: "none",
@@ -75,7 +69,7 @@ export const darkTheme = createTheme({
     },
   },
   typography: {
-    fontFamily: assistantFont.style.fontFamily,
+    fontFamily: '"Assistant", "sans-serif"',
   },
   shadows: {
     0: "none",

@@ -1,22 +1,23 @@
 import { connectDB } from "@/lib/db";
 import { User } from "@/models/userModel";
 import { jwtVerify } from "jose";
-import { response, catchError } from "@/lib/helperFunction";
+import { catchError, successResponse } from "@/lib/helperFunction";
 
 export async function POST(request) {
   try {
     await connectDB();
 
-    const { token } = await request.json();
+    const body = await request.json();
+    console.log("📥 Verify-Email: Received Body:", body);
+    const { token } = body;
 
-    // ----------- Validate Input -----------
     if (!token) {
-      return response(false, 400, "TOKEN_NOT_PROVIDED");
+      console.warn("⚠️ Verify-Email: No token provided in request body.");
+      return catchError({ status: 400, message: "Verification token is missing." });
     }
 
-    // ----------- Validate ENV -----------
     if (!process.env.SECRET_KEY) {
-      return response(false, 500, "SERVER_ENV_MISSING_SECRET_KEY");
+      throw new Error("Server configuration missing (SECRET_KEY)");
     }
 
     const secret = new TextEncoder().encode(process.env.SECRET_KEY);
@@ -26,27 +27,31 @@ export async function POST(request) {
     try {
       const verified = await jwtVerify(token, secret);
       payload = verified.payload;
-    } catch {
-      return response(false, 400, "INVALID_OR_EXPIRED_TOKEN");
+      console.log("✅ Verify-Email: Token verified for UID:", payload.uid || payload.userId);
+    } catch (error) {
+      console.error("❌ Verify-Email Token Error:", error.message);
+      return catchError({ status: 400, message: "The verification link is invalid or has expired." });
     }
 
-    // ----------- Find User -----------
-    const user = await User.findById(payload.uid || payload.userId);
+    // ----------- Find and Verify User -----------
+    const user = await User.findById(payload.uid || payload.userId).select("+isEmailVerified");
     if (!user) {
-      return response(false, 404, "USER_NOT_FOUND");
+      console.error("❌ Verify-Email: User not found in DB.");
+      return catchError({ status: 404, message: "Associated user not found." });
     }
 
-    // ----------- Already Verified? -----------
     if (user.isEmailVerified) {
-      return response(true, 200, "EMAIL_ALREADY_VERIFIED");
+      return successResponse("Your email is already verified. You can log in now.", null, 200, { verified: true });
     }
 
-    // ----------- Mark as Verified -----------
     user.isEmailVerified = true;
     await user.save();
 
-    return response(true, 200, "EMAIL_VERIFIED_SUCCESSFULLY");
+    console.log("✅ Verify-Email: Success for user:", user.email);
+    return successResponse("Email verified successfully! You can now log in to your account.", null, 200);
+
   } catch (error) {
+    console.error("❌ Verify-Email Crash:", error);
     return catchError(error);
   }
 }

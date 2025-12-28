@@ -1,13 +1,14 @@
 import { isAuthenticated } from "@/lib/authentication";
 import { connectDB } from "@/lib/db";
-import { catchError, response } from "@/lib/helperFunction";
+import { catchError, successResponse } from "@/lib/helperFunction";
 import { ProductModel } from "@/models/productModel";
-import { NextResponse } from "next/server";
 
 export async function GET(request) {
     try {
         const auth = await isAuthenticated('admin')
-        if (!auth.isAuth) return response(false, 403, 'Unauthorized.')
+        if (!auth.isAuth) {
+            return catchError({ status: 403, message: 'Unauthorized access.' });
+        }
 
         await connectDB()
 
@@ -28,7 +29,7 @@ export async function GET(request) {
             matchQuery = { deletedAt: { $ne: null } }
         }
 
-        // Global filter
+        // Global filter logic
         if (globalFilter) {
             matchQuery['$or'] = [
                 { name: { $regex: globalFilter, $options: 'i' } },
@@ -64,8 +65,7 @@ export async function GET(request) {
             ]
         }
 
-        // Column filter
-        // Column filter
+        // Column specific filter logic
         if (filters.length > 0) {
             filters.forEach((filter) => {
                 if (filter.id === 'category') {
@@ -87,7 +87,7 @@ export async function GET(request) {
             })
         }
 
-        // Sorting
+        // Sorting logic
         let sortQuery = {}
         if (sorting.length > 0) {
             sorting.forEach((sort) => {
@@ -96,7 +96,7 @@ export async function GET(request) {
             })
         }
 
-        // Aggregation pipeline
+        // Aggregation pipeline for product listing with category info
         const pipeline = [
             {
                 $lookup: {
@@ -132,20 +132,14 @@ export async function GET(request) {
             }
         ]
 
-        // Execute query
-        const getProduct = await ProductModel.aggregate(pipeline)
+        const [getProduct, totalRowCount] = await Promise.all([
+            ProductModel.aggregate(pipeline),
+            ProductModel.countDocuments(matchQuery)
+        ]);
 
-        // Get total row count
-        const totalRowCount = await ProductModel.countDocuments(matchQuery)
-
-        return NextResponse.json({
-            success: true,
-            message: 'Product list',
-            data: getProduct,
-            meta: { totalRowCount }
-        })
+        return successResponse('Product list fetched successfully', getProduct, 200, { totalRowCount });
 
     } catch (error) {
         return catchError(error)
     }
-} 
+}

@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { zSchema } from "@/lib/zodSchema";
+import { baseSchema, zSchema } from "@/lib/zodSchema";
 import { ButtonLoading } from "@/components/Application/ButtonLoading";
 import {
   Form,
@@ -29,7 +29,7 @@ const ResetPassword = () => {
   // ❗ FIXED: manual loading state
   const [sendingOtpLoading, setSendingOtpLoading] = useState(false);
 
-  const formSchema = zSchema.pick({ email: true });
+  const formSchema = baseSchema.pick({ email: true });
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {

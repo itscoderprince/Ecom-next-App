@@ -1,13 +1,14 @@
 import { isAuthenticated } from "@/lib/authentication";
 import { connectDB } from "@/lib/db";
-import { response } from "@/lib/helperFunction";
+import { catchError, successResponse } from "@/lib/helperFunction";
 import { CategoryModel } from "@/models/categoryModel";
-import { NextResponse } from "next/server";
 
 export async function GET(request) {
     try {
         const auth = await isAuthenticated('admin')
-        if (!auth.isAuth) return response(false, 403, 'Unauthorized.')
+        if (!auth.isAuth) {
+            return catchError({ status: 403, message: 'Unauthorized access.' });
+        }
 
         await connectDB()
 
@@ -28,7 +29,7 @@ export async function GET(request) {
             matchQuery = { deletedAt: { $ne: null } }
         }
 
-        // Global filter
+        // Global and column filters
         if (globalFilter) {
             matchQuery['$or'] = [
                 { name: { $regex: globalFilter, $options: 'i' } },
@@ -36,14 +37,13 @@ export async function GET(request) {
             ]
         }
 
-        // Column filter
         if (filters.length > 0) {
             filters.forEach((filter) => {
                 matchQuery[filter.id] = { $regex: filter.value, $options: 'i' }
             })
         }
 
-        // Sorting
+        // Sorting configuration
         let sortQuery = {}
         if (sorting.length > 0) {
             sorting.forEach((sort) => {
@@ -51,7 +51,7 @@ export async function GET(request) {
             })
         }
 
-        // Aggregation pipeline
+        // Category listing pipeline
         const pipeline = [
             { $match: matchQuery },
             { $sort: Object.keys(sortQuery).length ? sortQuery : { createdAt: -1 } },
@@ -69,20 +69,14 @@ export async function GET(request) {
             }
         ]
 
-        // Execute query
-        const getCategory = await CategoryModel.aggregate(pipeline)
+        const [getCategory, totalRowCount] = await Promise.all([
+            CategoryModel.aggregate(pipeline),
+            CategoryModel.countDocuments(matchQuery)
+        ]);
 
-        // Get total row count
-        const totalRowCount = await CategoryModel.countDocuments(matchQuery)
-
-        return NextResponse.json({
-            success: true,
-            message: 'Category list',
-            data: getCategory,
-            meta: { totalRowCount }
-        })
+        return successResponse('Category list fetched successfully', getCategory, 200, { totalRowCount });
 
     } catch (error) {
         return catchError(error)
     }
-} 
+}

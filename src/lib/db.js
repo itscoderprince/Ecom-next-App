@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
 
+/**
+ * Handles MongoDB connection with a caching mechanism for Next.js hot-reloading.
+ * Prevents multiple active connections in development environments.
+ */
+
 const MONGODB_URI = process.env.MONGODB_URI;
 let cached = global.mongoose;
 

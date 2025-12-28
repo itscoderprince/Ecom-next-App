@@ -4,39 +4,47 @@ import { jwtVerify } from "jose";
 import { NextResponse } from "next/server";
 
 // Middleware
+// Middleware to handle auth-based routing protection
 export default async function middleware(req) {
-    try {
-        const pathname = req.nextUrl.pathname
-        const hasToken = req.cookies.has("access_token")
+    const { pathname } = req.nextUrl;
+    const token = req.cookies.get("access_token")?.value;
 
-        if (!hasToken) {
+    try {
+        // 1. If no token, redirect to login unless already on an auth page
+        if (!token) {
             if (!pathname.startsWith('/auth')) {
-                return NextResponse.redirect(new URL(WEBSITE_LOGIN, req.nextUrl))
+                return NextResponse.redirect(new URL(WEBSITE_LOGIN, req.nextUrl));
             }
             return NextResponse.next();
         }
 
-        // Token
-        const access_token = req.cookies.get("access_token")
-        const { payload } = await jwtVerify(access_token.value, new TextEncoder().encode(process.env.SECRET_KEY));
+        // 2. Verify token
+        const { payload } = await jwtVerify(
+            token,
+            new TextEncoder().encode(process.env.SECRET_KEY)
+        );
 
-        const role = payload.role
+        const { role } = payload;
+
+        // 3. User is authenticated, prevent visiting auth pages
         if (pathname.startsWith('/auth')) {
-            return NextResponse.redirect(new URL(role === 'admin' ? ADMIN_DASHBOARD : USER_DASHBOARD, req.nextUrl))
+            const dashboard = role === 'admin' ? ADMIN_DASHBOARD : USER_DASHBOARD;
+            return NextResponse.redirect(new URL(dashboard, req.nextUrl));
         }
 
+        // 4. Role-based access control
         if (pathname.startsWith('/admin') && role !== 'admin') {
-            return NextResponse.redirect(new URL(USER_DASHBOARD, req.nextUrl))
-
+            return NextResponse.redirect(new URL(USER_DASHBOARD, req.nextUrl));
         }
-        if (pathname.startsWith('/my-account') && role !== 'user') {
-            return NextResponse.redirect(new URL(USER_DASHBOARD, req.nextUrl))
 
-        }
         return NextResponse.next();
 
     } catch (error) {
-        return NextResponse.redirect(new URL(WEBSITE_LOGIN, req.nextUrl))
+        console.error("Middleware Auth Error:", error.message);
+        // If token verification fails (expired/invalid), clear and redirect
+        const response = NextResponse.redirect(new URL(WEBSITE_LOGIN, req.nextUrl));
+        response.cookies.delete("access_token");
+        return response;
     }
 }
 

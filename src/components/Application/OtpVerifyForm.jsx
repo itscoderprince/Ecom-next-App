@@ -16,13 +16,13 @@ import {
 import { z } from "zod"; // ✅ use z directly
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { zSchema } from "@/lib/zodSchema";
+import { baseSchema, zSchema } from "@/lib/zodSchema";
 import { Loader2 } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
 
 const OtpVerifyForm = ({ email, onSubmit }) => {
-  const formSchema = zSchema.pick({ otp: true, email: true });
+  const formSchema = baseSchema.pick({ otp: true, email: true });
 
   const form = useForm({
     resolver: zodResolver(formSchema),

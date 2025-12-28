@@ -14,11 +14,14 @@ const EmailVerification = ({ params }) => {
   const { token } = use(params);
   const [isVerified, setIsVerified] = useState(false);
   const [loading, setLoading] = useState(true);
+  console.log(token);
+
 
   useEffect(() => {
     const verifyEmail = async () => {
       try {
         const { data } = await axios.post("/api/auth/verify-email", { token });
+        console.log(data);
 
         if (data.success) {
           setIsVerified(true);

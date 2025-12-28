@@ -1,70 +1,64 @@
 import { connectDB } from "@/lib/db";
-import { OtpModel } from "@/models/otpModel";
-import { User } from "@/models/userModel";
-import { generateOTP, response, catchError } from "@/lib/helperFunction";
+import { generateOTP, catchError, successResponse } from "@/lib/helperFunction";
 import { sendMail } from "@/lib/sendMail";
 import { otpEmail } from "@/email/otpVerification";
-import { zSchema } from "@/lib/zodSchema";
+import { baseSchema } from "@/lib/zodSchema";
+import { OtpModel } from "@/models/otpModel";
+import { User } from "@/models/userModel";
+
+const sendOtpSchema = baseSchema.pick({ email: true });
 
 export async function POST(req) {
   try {
     await connectDB();
 
     const payload = await req.json();
-
-    // ------------------------ VALIDATION ------------------------
-    const validation = zSchema.pick({ email: true }).safeParse(payload);
+    const validation = sendOtpSchema.safeParse(payload);
 
     if (!validation.success) {
-      return response(false, 400, "INVALID_INPUT", validation.error.flatten());
+      return catchError({
+        status: 400,
+        name: "ValidationError",
+        errors: validation.error.formErrors.fieldErrors
+      });
     }
 
     const { email } = validation.data;
 
     // ------------------------ FIND USER ------------------------
-    const user = await User.findOne({ email, deletedAt: null }).select(
-      "+isEmailVerified"
-    );
-
-    if (!user) return response(false, 404, "USER_NOT_FOUND");
-
-    // Optional: Block OTP if email is not verified
-    // (Remove if you WANT to send OTP even when email unverified)
-    if (!user.isEmailVerified) {
-      return response(false, 403, "EMAIL_NOT_VERIFIED");
+    const user = await User.findOne({ email, deletedAt: null }).select("+isEmailVerified");
+    if (!user) {
+      return catchError({ status: 404, message: "User not found." });
     }
 
-    // ------------------------ RATE LIMIT (OPTIONAL BUT GOOD) ------------------------
+    if (!user.isEmailVerified) {
+      return catchError({ status: 403, message: "Please verify your email address first." });
+    }
+
+    // ------------------------ RATE LIMIT (30 sec cooldown) ------------------------
     const lastOtp = await OtpModel.findOne({ email }).sort({ createdAt: -1 });
 
     if (lastOtp) {
       const diff = (Date.now() - lastOtp.createdAt.getTime()) / 1000;
-
-      if (diff < 15) {
-        return response(false, 429, "OTP_REQUEST_TOO_FAST"); // 30 sec cooldown
+      if (diff < 30) {
+        return catchError({ status: 429, message: `Please wait ${Math.ceil(30 - diff)} seconds before requesting a new OTP.` });
       }
     }
 
-    // ------------------------ DELETE OLD OTP ------------------------
+    // ------------------------ GENERATE & SEND NEW OTP ------------------------
     await OtpModel.deleteMany({ email });
-
-    // ------------------------ GENERATE NEW OTP ------------------------
     const otp = generateOTP();
 
-    await OtpModel.create({
-      email,
-      otp,
-      createdAt: new Date(),
-    });
+    await OtpModel.create({ email, otp, createdAt: new Date() });
 
-    // ------------------------ SEND MAIL ------------------------
     await sendMail({
       to: email,
-      subject: "Your OTP Code",
+      subject: "Password Reset OTP",
       html: otpEmail(otp),
     });
 
-    return response(true, 200, "OTP_SENT_SUCCESSFULLY");
+    return successResponse("A reset OTP has been sent to your email.");
+
   } catch (error) {
     return catchError(error);
   }

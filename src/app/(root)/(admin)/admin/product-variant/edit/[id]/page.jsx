@@ -8,7 +8,7 @@ import {
 import axios from "axios";
 import React, { use, useEffect, useState } from "react";
 import { ButtonLoading } from "@/components/Application/ButtonLoading";
-import { zSchema } from "@/lib/zodSchema";
+import { baseSchema, zSchema } from "@/lib/zodSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -57,7 +57,7 @@ const EditProductVariant = ({ params }) => {
     }, [getProduct]);
 
     // zod schema
-    const formSchema = zSchema.pick({
+    const formSchema = baseSchema.pick({
         product: true,
         sku: true,
         color: true,

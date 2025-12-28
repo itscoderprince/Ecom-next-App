@@ -18,7 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import AdminBreadcrumb from "@/components/Application/Admin/AdminBreadcrumb";
 import { ButtonLoading } from "@/components/Application/ButtonLoading";
 
-import { zSchema } from "@/lib/zodSchema";
+import { baseSchema, zSchema } from "@/lib/zodSchema";
 import { cn } from "@/lib/utils";
 import { ADMIN_COUPON_SHOW, ADMIN_DASHBOARD } from "@/routes/AdminPanel.route";
 import useFetch from "@/hooks/useFetch";
@@ -35,7 +35,7 @@ const EditCoupon = ({ params }) => {
         { href: "", label: "Update Coupon" },
     ];
 
-    const formSchema = zSchema.pick({
+    const formSchema = baseSchema.pick({
         code: true,
         discountPercentage: true,
         minShoppingAmount: true,

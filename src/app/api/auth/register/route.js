@@ -1,69 +1,68 @@
-// api/auth/register.js
 import { emailVerificationLink } from "@/email/emailVerificationLink";
 import { connectDB } from "@/lib/db";
-import { catchError, response } from "@/lib/helperFunction";
+import { catchError, successResponse, generateVerifyToken } from "@/lib/helperFunction";
 import { sendMail } from "@/lib/sendMail";
-import { zSchema } from "@/lib/zodSchema";
+import { baseSchema } from "@/lib/zodSchema";
 import { User } from "@/models/userModel";
-import { SignJWT } from "jose";
+
+const registerSchema = baseSchema.pick({ name: true, email: true, password: true });
 
 export async function POST(request) {
   try {
     await connectDB();
+    console.log("📝 Register: DB Connected");
 
     // ------- Parse & Validate Input -------
     const payload = await request.json();
-
-    const validation = zSchema
-      .pick({ name: true, email: true, password: true })
-      .safeParse(payload);
+    console.log("📝 Register: Payload received:", payload.email);
+    const validation = registerSchema.safeParse(payload);
 
     if (!validation.success) {
-      return response(false, 400, "Invalid fields", validation.error.flatten());
+      console.log("📝 Register: Zod Validation Error:", validation.error.formErrors.fieldErrors);
+      return catchError({
+        status: 400,
+        name: "ValidationError",
+        errors: validation.error.formErrors.fieldErrors
+      });
     }
 
     const { name, email, password } = validation.data;
 
     // ------- Check Required ENV -------
     if (!process.env.SECRET_KEY || !process.env.NEXT_PUBLIC_BASE_URL) {
-      return response(false, 500, "Server configuration error. Missing environment variables.");
+      console.error("❌ Register: ENV MISSING");
+      throw new Error("Server configuration missing (SECRET_KEY or BASE_URL)");
     }
 
     // ------- Prevent duplicate registration -------
     const existing = await User.findOne({ email });
     if (existing) {
-      return response(false, 409, "Email already registered.");
+      console.log("📝 Register: User already exists:", email);
+      return catchError({ status: 409, message: "This email is already registered." });
     }
 
     // ------- Create new user -------
+    console.log("📝 Register: Creating user...");
     const newUser = await User.create({ name, email, password });
+    console.log("📝 Register: User created:", newUser._id);
 
-    // ------- Generate secure token -------
-    const secret = new TextEncoder().encode(process.env.SECRET_KEY);
-
-    const token = await new SignJWT({
-      uid: newUser._id.toString(),
-      type: "email-verification",
-    })
-      .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("1h")
-      .setIssuedAt()
-      .sign(secret);
-
-    // Encode the token safely for URL
+    // ------- Generate secure token & send mail -------
+    const token = await generateVerifyToken(newUser._id);
     const encodedToken = encodeURIComponent(token);
+    const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/verify-email/${encodedToken}`;
 
-    const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/Auth/verify-email/${encodedToken}`;
-
-    // ------- Send verification mail -------
+    console.log("📝 Register: Sending mail to:", email);
     await sendMail({
       to: email,
       subject: "Verify your email",
       html: emailVerificationLink(verifyUrl),
     });
 
-    return response( true, 200, "Registration successful! Please verify your email to continue.");
+    console.log("✅ Register: Complete!");
+    return successResponse("Registration successful! Please verify your email to continue.");
+
   } catch (err) {
+    console.error("❌ Register Crash:", err);
     return catchError(err);
   }
 }

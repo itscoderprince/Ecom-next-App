@@ -1,22 +1,16 @@
-import Link from 'next/link'
+import Navbar from '@/components/Application/Navbar'
 import React from 'react'
 
-const page = () => {
+const Home = () => {
   return (
-    <nav className='flex justify-between items-center py-2 px-12 bg-red-200'>
-      <div>
-        <h1 className='text-2xl font-bold'>logo</h1>
+    <div>
+      <Navbar />
+      <div className="flex flex-col items-center justify-center h-[70vh]">
+        <h1 className="text-4xl font-bold font-assistant">Welcome to Panda Bees</h1>
+        <p className="mt-4 text-muted-foreground">Premium Online Shopping Experience</p>
       </div>
-      <div>
-        <ul className='flex gap-8'>
-          <li><Link href='/'>Home</Link></li>
-          <li><Link href='/auth/login'>Login</Link></li>
-          <li><Link href='/auth/register'>Register</Link></li>
-          <li><Link href='/admin/dashboard'>Admin Dashboard</Link></li>
-        </ul>
-      </div>
-    </nav>
+    </div>
   )
 }
 
-export default page
+export default Home;

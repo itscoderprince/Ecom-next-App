@@ -17,7 +17,7 @@ import {
 import { ButtonLoading } from "@/components/Application/ButtonLoading";
 import useFetch from "@/hooks/useFetch";
 import { ADMIN_DASHBOARD, ADMIN_MEDIA_SHOW } from "@/routes/AdminPanel.route";
-import { zSchema } from "@/lib/zodSchema";
+import { baseSchema, zSchema } from "@/lib/zodSchema";
 
 import Image from "next/image";
 import { toast } from "sonner";
@@ -42,7 +42,7 @@ const EditMedia = ({ params }) => {
   } = useFetch(`/api/media/get/${id}`);
 
   // ===== Form Schema =====
-  const formSchema = zSchema.pick({
+  const formSchema = baseSchema.pick({
     _id: true,
     title: true,
     alt: true,

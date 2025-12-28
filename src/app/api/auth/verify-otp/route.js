@@ -1,64 +1,64 @@
 import { connectDB } from "@/lib/db";
 import { OtpModel } from "@/models/otpModel";
 import { User } from "@/models/userModel";
-import { response, catchError } from "@/lib/helperFunction";
-import { zSchema } from "@/lib/zodSchema";
+import { catchError, successResponse } from "@/lib/helperFunction";
+import { baseSchema, zSchema } from "@/lib/zodSchema";
 import { cookies } from "next/headers";
 import { SignJWT } from "jose";
 
 const TOKEN_EXPIRY = "7d";
+const verifyOtpSchema = baseSchema.pick({ email: true, otp: true });
 
 export async function POST(req) {
   try {
     await connectDB();
 
-    const payload = await req.json();
-
-    // ---------------- Validate Input ----------------
-    const validation = zSchema
-      .pick({ email: true, otp: true })
-      .safeParse(payload);
-
-    if (!validation.success) {
-      return response(false, 400, "INVALID_INPUT", validation.error.flatten());
+    if (!process.env.SECRET_KEY) {
+      throw new Error("Server configuration missing (SECRET_KEY)");
     }
 
-    if (!process.env.SECRET_KEY) {
-      return response(false, 500, "SERVER_ENV_MISSING_SECRET_KEY");
+    const payload = await req.json();
+    const validation = verifyOtpSchema.safeParse(payload);
+
+    if (!validation.success) {
+      return catchError({
+        status: 400,
+        name: "ValidationError",
+        errors: validation.error.formErrors.fieldErrors
+      });
     }
 
     const { email, otp } = validation.data;
 
     // ---------------- Check User ----------------
-    const user = await User.findOne({ email, deletedAt: null }).select(
-      "+isEmailVerified"
-    );
+    const user = await User.findOne({ email, deletedAt: null }).select("+isEmailVerified");
 
     if (!user) {
-      return response(false, 404, "USER_NOT_FOUND");
+      return catchError({ status: 404, message: "User not found." });
     }
 
     if (!user.isEmailVerified) {
-      return response(false, 403, "EMAIL_NOT_VERIFIED");
+      return catchError({ status: 403, message: "Please verify your email first." });
     }
 
     // ---------------- Validate OTP ----------------
     const otpRecord = await OtpModel.findOne({ email }).sort({ createdAt: -1 });
 
     if (!otpRecord) {
-      return response(false, 404, "OTP_NOT_FOUND");
+      return catchError({ status: 404, message: "OTP not found or expired. Please request a new one." });
     }
 
     if (otpRecord.otp !== otp) {
-      return response(false, 400, "INVALID_OTP");
+      return catchError({ status: 400, message: "Invalid OTP. Please check and try again." });
     }
 
+    // Check expiry (standard Mongoose TTL indexing usually handles this, but manual check is safer)
     if (otpRecord.expiresAt && otpRecord.expiresAt < new Date()) {
       await OtpModel.deleteMany({ email });
-      return response(false, 400, "OTP_EXPIRED");
+      return catchError({ status: 400, message: "OTP has expired." });
     }
 
-    // OTP is valid → remove it
+    // OTP is valid → remove it and log the user in
     await OtpModel.deleteMany({ email });
 
     // ---------------- Create Access Token ----------------
@@ -76,18 +76,19 @@ export async function POST(req) {
     const cookieStore = await cookies();
     cookieStore.set("access_token", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production" && process.env.NEXT_PUBLIC_BASE_URL?.startsWith("https"),
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
       maxAge: 60 * 60 * 24 * 7,
     });
 
-    return response(true, 200, "LOGIN_SUCCESS", {
+    return successResponse("Login successful!", {
       _id: user._id.toString(),
       name: user.name,
       email: user.email,
       role: user.role,
     });
+
   } catch (error) {
     return catchError(error);
   }
