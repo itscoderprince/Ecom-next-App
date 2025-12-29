@@ -50,16 +50,17 @@ const AdminSearch = () => {
         <>
             <Button
                 variant="outline"
-                className="relative h-9 w-full justify-start rounded-[0.5rem] bg-background text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-40 lg:w-64"
+                className="relative h-9 w-full flex-1 justify-start rounded-lg bg-background text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-40 md:flex-none lg:w-64"
                 onClick={() => setOpen(true)}
             >
+                <Search className="mr-2 h-4 w-4" />
                 <span className="hidden lg:inline-flex">Search routes...</span>
                 <span className="inline-flex lg:hidden">Search...</span>
                 <kbd className="pointer-events-none absolute right-[0.3rem] top-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
                     <span className="text-xs">⌘</span>K
                 </kbd>
             </Button>
-            <CommandDialog open={open} onOpenChange={setOpen}>
+            <CommandDialog open={open} onOpenChange={setOpen} className="sm:top-[50%] top-[15%] sm:translate-y-[-50%] translate-y-0">
                 <CommandInput placeholder="Type a command or search..." />
                 <CommandList>
                     <CommandEmpty>No results found.</CommandEmpty>

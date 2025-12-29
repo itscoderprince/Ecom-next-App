@@ -9,8 +9,12 @@ import React from "react";
 import { MdLogout } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
-const LogoutButton = () => {
+const LogoutButton = ({
+  variant = "dropdown", // "dropdown", "outline", "ghost", "icon"
+  className = ""
+}) => {
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -43,14 +47,28 @@ const LogoutButton = () => {
     }
   };
 
+  if (variant === "dropdown") {
+    return (
+      <DropdownMenuItem
+        onClick={handleLogout}
+        className={`hover:bg-red-100 hover:text-red-600 focus:bg-red-100 focus:text-red-600 cursor-pointer ${className}`}
+      >
+        <MdLogout className="h-4 w-4 mr-2" />
+        Logout
+      </DropdownMenuItem>
+    );
+  }
+
   return (
-    <DropdownMenuItem
+    <Button
+      variant={variant === "icon" ? "ghost" : variant}
+      size={variant === "icon" ? "icon" : "sm"}
       onClick={handleLogout}
-      className="hover:bg-red-100 hover:text-red-600 focus:bg-red-100 focus:text-red-600 cursor-pointer"
+      className={`text-muted-foreground hover:text-red-600 hover:bg-red-50 ${className}`}
     >
-      <MdLogout className="h-4 w-4 mr-2 hover:text-red-600" />
-      Logout
-    </DropdownMenuItem>
+      <MdLogout className={variant === "icon" ? "h-5 w-5" : "h-4 w-4 mr-2"} />
+      {variant !== "icon" && "Logout"}
+    </Button>
   );
 };
 

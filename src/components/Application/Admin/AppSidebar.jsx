@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Sidebar,
   SidebarContent,
@@ -8,12 +10,10 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubItem,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import logoDark from "../../../../public/assets/images/logo-black.png";
 import logo from "../../../../public/assets/images/logo-white.png";
-import { CircleX } from "lucide-react";
 import { adminAppSidebarMenu } from "@/lib/adminSidebarMenu";
 import {
   Collapsible,
@@ -22,9 +22,15 @@ import {
 } from "@/components/ui/collapsible";
 import Link from "next/link";
 import { LuChevronRight } from "react-icons/lu";
-import { BiCloset } from "react-icons/bi";
+import { useSidebar } from "@/components/ui/sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useSelector } from "react-redux";
+import LogoutButton from "./LogoutButton";
 
 const AppSidebar = () => {
+  const { setOpenMobile } = useSidebar();
+  const { auth } = useSelector((store) => store.authStore);
+
   return (
     <Sidebar className="z-50 fixed md:static">
       <SidebarHeader className="border-b h-14 p-0">
@@ -64,7 +70,7 @@ const AppSidebar = () => {
                     asChild
                     className="font-semibold px-2 py-5"
                   >
-                    <Link href={menu.url}>
+                    <Link href={menu.url} onClick={() => setOpenMobile(false)}>
                       <menu.icon />
                       {menu.title}
                     </Link>
@@ -78,7 +84,7 @@ const AppSidebar = () => {
                     {menu.submenu.map((sub, i) => (
                       <SidebarMenuSubItem key={i}>
                         <SidebarMenuButton asChild>
-                          <Link href={sub.url}>{sub.title}</Link>
+                          <Link href={sub.url} onClick={() => setOpenMobile(false)}>{sub.title}</Link>
                         </SidebarMenuButton>
                       </SidebarMenuSubItem>
                     ))}
@@ -90,7 +96,23 @@ const AppSidebar = () => {
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter />
+      <SidebarFooter className="border-t p-2">
+        <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-muted/30">
+          <Avatar className="h-8 w-8 border">
+            <AvatarImage src={auth?.avatar} alt="User" />
+            <AvatarFallback>{auth?.name?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1 overflow-hidden">
+            <p className="text-sm font-semibold truncate leading-none mb-1">
+              {auth?.name?.toUpperCase() || "ACCOUNT"}
+            </p>
+            <p className="text-xs text-muted-foreground truncate leading-none">
+              Admin Profile
+            </p>
+          </div>
+          <LogoutButton variant="icon" className="h-8 w-8" />
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 };

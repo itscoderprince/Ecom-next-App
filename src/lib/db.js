@@ -17,6 +17,13 @@ if (!cached) {
 
 export const connectDB = async () => {
   if (cached.conn) return cached.conn;
+
+  if (!MONGODB_URI) {
+    throw new Error(
+      "Please define the MONGODB_URI environment variable inside .env.local"
+    );
+  }
+
   if (!cached.promise) {
     cached.promise = mongoose.connect(MONGODB_URI, {
       dbName: "Next-Ecom_app",
