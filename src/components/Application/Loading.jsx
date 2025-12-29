@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import loading from "../../../public/assets/images/loading.svg"; 
+import loading from "../../../public/assets/images/loading.svg";
 
 const Loading = () => {
   return (

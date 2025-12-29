@@ -2,8 +2,6 @@
 
 import * as React from "react";
 import { Label, Pie, PieChart } from "recharts";
-
-import { CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   ChartContainer,
@@ -12,22 +10,22 @@ import {
 } from "@/components/ui/chart";
 
 const chartData = [
-  { status: "Pending", count: 275, fill: "var(--chart-1)" },
-  { status: "Processing", count: 200, fill: "var(--chart-2)" },
-  { status: "Shipped", count: 187, fill: "var(--chart-3)" },
-  { status: "Delivered", count: 173, fill: "var(--chart-4)" },
-  { status: "Cancelled", count: 90, fill: "var(--chart-5)" },
-  { status: "Unverified", count: 90, fill: "var(--muted-foreground)" },
+  { status: "Pending", count: 275, fill: "#f97316" },
+  { status: "Processing", count: 200, fill: "#3b82f6" }, // Blue
+  { status: "Shipped", count: 187, fill: "#22c55e" },
+  { status: "Delivered", count: 173, fill: "#eab308" },  // Yellow
+  { status: "Cancelled", count: 90, fill: "#ec4899" },   // Pink
+  { status: "Unverified", count: 90, fill: "#64748b" },  // Slate
 ];
 
 const chartConfig = {
   status: { label: "Status" },
-  pending: { label: "Pending", color: "var(--chart-1)" },
-  processing: { label: "Processing", color: "var(--chart-2)" },
-  shipped: { label: "Shipped", color: "var(--chart-3)" },
-  delivered: { label: "Delivered", color: "var(--chart-4)" },
-  cancelled: { label: "Cancelled", color: "var(--chart-5)" },
-  unverified: { label: "Unverified", color: "var(--muted-foreground)" },
+  pending: { label: "Pending", color: "#f97316" },
+  processing: { label: "Processing", color: "#3b82f6" },
+  shipped: { label: "Shipped", color: "#22c55e" },
+  delivered: { label: "Delivered", color: "#eab308" },
+  cancelled: { label: "Cancelled", color: "#ec4899" },
+  unverified: { label: "Unverified", color: "#64748b" },
 };
 
 export function OrderStatus() {
