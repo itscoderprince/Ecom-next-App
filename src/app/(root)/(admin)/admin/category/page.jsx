@@ -1,0 +1,75 @@
+'use client'
+
+import AdminBreadcrumb from "@/components/Application/Admin/AdminBreadcrumb";
+import DatatableWrapper from "@/components/Application/Admin/DatatableWrapper";
+import EditAction from "@/components/Application/Admin/EditAction";
+import DeleteAction from "@/components/Application/Admin/DeleteAction";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { DT_CATEGORY_COLUMN } from "@/lib/column";
+import { columnConfig } from "@/lib/helperFunction";
+import {
+  ADMIN_CATEGORY_ADD,
+  ADMIN_CATEGORY_EDIT,
+  ADMIN_CATEGORY_SHOW,
+  ADMIN_DASHBOARD,
+  ADMIN_TRASH,
+} from "@/routes/AdminPanel.route";
+import { PlusCircle } from "lucide-react";
+import Link from "next/link";
+import { useCallback, useMemo } from "react";
+
+const breadcrumbData = [
+  { href: ADMIN_DASHBOARD, label: "Home" },
+  { href: ADMIN_CATEGORY_SHOW, label: "Category" },
+];
+
+const ShowCategory = () => {
+  const columns = useMemo(() => {
+    return columnConfig(DT_CATEGORY_COLUMN);
+  }, []);
+
+  const action = useCallback((row, deleteType, handleDelete) => {
+    return (
+      <>
+        <EditAction key='edit' href={ADMIN_CATEGORY_EDIT(row.original._id)} />
+        <DeleteAction key='delete' handleDelete={handleDelete} row={row} deleteType={deleteType} />
+      </>
+    );
+  }, []);
+
+  return (
+    <div>
+      {/* Breadcrumb Navigation */}
+      <AdminBreadcrumb breadcrumbData={breadcrumbData} />
+
+      <Card className="py-0 rounded shadow-sm gap-0">
+        <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
+          <div className="flex justify-between items-center">
+            <h4 className="font-semibold text-xl">Show Category</h4>
+            <Button className="cursor-pointer">
+              <PlusCircle />
+              <Link href={ADMIN_CATEGORY_ADD}>Add Category</Link>
+            </Button>
+          </div>
+        </CardHeader>
+
+        <CardContent className="mb-5 px-0">
+          <DatatableWrapper
+            queryKey="category-data"
+            fetchUrl="/api/category"
+            initialPageSize={10}
+            columnsConfig={columns}
+            exportEndPoint="/api/category/export"
+            deleteEndPoint="/api/category/delete"
+            deleteType="SD"
+            trashView={`${ADMIN_TRASH}?trashof=category`}
+            createAction={action}
+          />
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default ShowCategory;
